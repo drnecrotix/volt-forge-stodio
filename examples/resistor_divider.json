@@ -1,0 +1,71 @@
+{
+  "title": "Resistor Divider",
+  "analysis": {
+    "step": "1ms",
+    "stop": "100ms"
+  },
+  "ground_pin": {
+    "component_id": "ground-1",
+    "pin": "gnd"
+  },
+  "components": [
+    {
+      "id": "voltage-source-1",
+      "type": "voltage_source",
+      "name": "V1",
+      "value": "5",
+      "pins": ["positive", "negative"],
+      "x": 120,
+      "y": 120
+    },
+    {
+      "id": "resistor-1",
+      "type": "resistor",
+      "name": "R1",
+      "value": "1k",
+      "pins": ["a", "b"],
+      "x": 360,
+      "y": 120
+    },
+    {
+      "id": "resistor-2",
+      "type": "resistor",
+      "name": "R2",
+      "value": "1k",
+      "pins": ["a", "b"],
+      "x": 600,
+      "y": 120
+    },
+    {
+      "id": "ground-1",
+      "type": "ground",
+      "name": "GND1",
+      "value": "0",
+      "pins": ["gnd"],
+      "x": 600,
+      "y": 280
+    }
+  ],
+  "wires": [
+    {
+      "id": "wire-1",
+      "start": { "component_id": "voltage-source-1", "pin": "positive" },
+      "end": { "component_id": "resistor-1", "pin": "a" }
+    },
+    {
+      "id": "wire-2",
+      "start": { "component_id": "resistor-1", "pin": "b" },
+      "end": { "component_id": "resistor-2", "pin": "a" }
+    },
+    {
+      "id": "wire-3",
+      "start": { "component_id": "resistor-2", "pin": "b" },
+      "end": { "component_id": "ground-1", "pin": "gnd" }
+    },
+    {
+      "id": "wire-4",
+      "start": { "component_id": "voltage-source-1", "pin": "negative" },
+      "end": { "component_id": "ground-1", "pin": "gnd" }
+    }
+  ]
+}

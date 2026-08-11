@@ -15,6 +15,10 @@ dist/
 build/
 out/
 coverage/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
 .next/
 .nuxt/
 .svelte-kit/
@@ -25,10 +29,12 @@ coverage/
 .pytest_cache/
 __pycache__/
 *.py[cod]
+*.egg-info/
 *.log
 logs/
 tmp/
 temp/
+tmp_video_frames/
 
 # IDE and editor settings
 .idea/
