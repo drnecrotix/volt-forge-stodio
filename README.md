@@ -3,6 +3,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Project Status: Early Development](https://img.shields.io/badge/status-early%20development-orange.svg)](#project-status)
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![CI](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml/badge.svg)](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml)
+[![Release](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/release.yml/badge.svg)](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/release.yml)
 [![Last Commit](https://img.shields.io/github/last-commit/drnecrotix/volt-forge-stodio)](https://github.com/drnecrotix/volt-forge-stodio/commits/main)
 
 **Design. Simulate. Analyze.**
@@ -164,6 +166,18 @@ Then open <http://localhost:8000> in a modern browser. Avoid opening `index.html
 ├── styles.css            # Web interface styles
 └── pyproject.toml        # Python package and dependency configuration
 ```
+
+## Releases
+
+Release builds are automated with GitHub Actions. Pushing a version tag such as `v0.1.0` will:
+
+1. install the project and run the unit tests;
+2. build both the source distribution and Python wheel;
+3. validate the distributions with Twine;
+4. upload the build output as a workflow artifact;
+5. create a GitHub Release with generated release notes and attach the built packages.
+
+The release workflow can also be started manually from GitHub Actions to verify that a package build succeeds without creating a GitHub Release.
 
 Watch the [releases page](https://github.com/drnecrotix/volt-forge-stodio/releases) and [changelog](CHANGELOG.md) for availability updates.
 
