@@ -14,6 +14,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Python desktop MVP with schematic models, editor UI, Ngspice execution, and waveform viewing
+- Browser circuit editor with modular project, simulation, topology, and visualization tools
+- Unit tests, example circuits, user guide, and developer guide
 - Project screenshots demonstrating the circuit workspace, transient waveform viewer, and schematic visualization
 - Initial GitHub-ready repository documentation
 - Contribution, conduct, and security policies

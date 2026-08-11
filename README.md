@@ -35,7 +35,7 @@ View a clean schematic representation with component labels, values, node voltag
 
 ## Features and Focus
 
-Planned and active areas of development include:
+Implemented and active areas of development include:
 
 - Visual schematic editing and component placement
 - Wire connections and editable component values
@@ -68,11 +68,9 @@ The implementation is still evolving. Technical choices and repository structure
 
 ## Project Status
 
-VoltForge Studio is in early development. This repository currently provides the public project and collaboration foundation. Source code, examples, tests, and detailed documentation will be published as the implementation is prepared for release.
+VoltForge Studio is in early development. The repository includes the Python desktop MVP, browser application, reusable web modules, tests, example circuits, and user/developer documentation. Interfaces and technical choices may change before the first stable release.
 
 ## Getting Started
-
-> **Source availability:** The application source has not been published in this repository yet. The commands below describe the intended desktop workflow and will become usable when the first source release adds the Python package files.
 
 ### Prerequisites
 
@@ -115,23 +113,23 @@ source .venv/bin/activate
 
 ### Install the Desktop Application
 
-Upgrade the packaging tools, then install VoltForge Studio in editable mode:
+Upgrade the packaging tools, then install VoltForge Studio in editable mode with waveform plotting support:
 
 ```bash
 python -m pip install --upgrade pip
-python -m pip install -e .
-```
-
-Install the optional plotting dependency if it is not included by the package configuration:
-
-```bash
-python -m pip install pyqtgraph
+python -m pip install -e ".[plot]"
 ```
 
 ### Run the Desktop Application
 
 ```bash
 python -m opencircuitlab.main
+```
+
+After installation, the package entry point is also available:
+
+```bash
+opencircuitlab
 ```
 
 If Python cannot find `opencircuitlab`, confirm that the virtual environment is active and repeat `python -m pip install -e .` from the repository root.
@@ -144,7 +142,28 @@ python -m unittest discover -s tests
 
 ### Web Application
 
-The web application launch command will be documented when its source and development tooling are published. No web installation command is currently claimed because the public repository does not yet contain the web application files.
+The web prototype has no package dependencies or build step. Start a local static server from the repository root:
+
+```bash
+python -m http.server 8000
+```
+
+Then open <http://localhost:8000> in a modern browser. Avoid opening `index.html` directly from the filesystem because browser security rules can interfere with module loading and import/export features.
+
+## Repository Layout
+
+```text
+.
+├── src/opencircuitlab/   # Python desktop application
+├── tests/                # Python unit tests
+├── examples/             # Example circuit projects
+├── docs/                 # User/developer guides and screenshots
+├── webapp/               # Reusable browser modules
+├── app.js                # Main browser application
+├── index.html            # Web entry point
+├── styles.css            # Web interface styles
+└── pyproject.toml        # Python package and dependency configuration
+```
 
 Watch the [releases page](https://github.com/drnecrotix/volt-forge-stodio/releases) and [changelog](CHANGELOG.md) for availability updates.
 

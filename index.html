@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="bg">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VoltForge Studio</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="panel left-panel">
+        <div class="brand-block">
+          <div class="brand-mark">VF</div>
+          <div>
+            <p class="eyebrow" id="brandEyebrow">Circuit Intelligence Lab</p>
+            <div class="brand-title-row">
+              <h1>VoltForge Studio</h1>
+              <div class="language-switch" id="languageSwitch" aria-label="Language switch">
+                <button class="lang-btn active" id="langBgBtn" type="button" data-lang="bg">BG</button>
+                <button class="lang-btn" id="langEnBtn" type="button" data-lang="en">EN</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title-row">
+            <h2 id="toolsHeading">Инструменти</h2>
+            <span class="chip" id="statusChip">готово</span>
+          </div>
+          <div class="toolbar-grid" id="toolButtons">
+            <button class="tool-btn active" id="toolSelectBtn" data-tool="select">Избор</button>
+            <button class="tool-btn" id="toolWireBtn" data-tool="wire">Проводник</button>
+            <button class="tool-btn" id="toolPencilBtn" data-tool="pencil">Молив</button>
+            <button class="tool-btn" id="toolPanBtn" data-tool="pan">Пан</button>
+            <button class="tool-btn" id="rotateBtn">Завърти</button>
+            <button class="tool-btn accent" id="simulateBtn">Симулирай</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title-row">
+            <h2 id="guideHeading">Бърз guide</h2>
+            <span class="hint" id="guideHint">какво правят функциите</span>
+          </div>
+          <div class="guide-card" id="quickGuide"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title-row">
+            <h2 id="componentsHeading">Компоненти</h2>
+            <span class="hint" id="componentsHint">dropdown + quick add</span>
+          </div>
+          <div class="component-picker-row">
+            <div class="picker-dropdown" id="componentDropdown">
+              <button class="picker-trigger" id="componentPickerBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+                <span class="picker-selected">
+                  <span class="picker-selected-icon" id="componentPickerIcon"></span>
+                  <span class="picker-selected-label" id="componentPickerLabel"></span>
+                </span>
+                <span class="picker-chevron">⌄</span>
+              </button>
+              <div class="picker-menu" id="componentPickerMenu">
+                <div class="picker-categories" id="componentCategoryMenu"></div>
+                <div class="picker-options" id="componentOptionsMenu" role="listbox"></div>
+              </div>
+            </div>
+            <button class="ghost-btn" id="addComponentBtn">Добави</button>
+          </div>
+          <div class="component-preview" id="componentPreview"></div>
+          <div class="palette" id="palette"></div>
+        </div>
+
+        <div class="section section-inspector">
+          <div class="section-title-row">
+            <h2 id="samplesHeading">Примери</h2>
+            <span class="hint" id="samplesHint">готови схеми</span>
+          </div>
+          <div class="sample-list">
+            <button class="sample-btn" data-sample="workingLed">Работещ LED</button>
+            <button class="sample-btn" data-sample="openSwitch">Прекъснат ключ</button>
+            <button class="sample-btn" data-sample="shortCircuit">Късо съединение</button>
+            <button class="sample-btn" data-sample="diodeReverse">Обърнат диод</button>
+            <button class="sample-btn" data-sample="capacitorDcBlock">DC блок с кондензатор</button>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" id="heroEyebrow">LTspice-подобен прототип с модерен интерфейс</p>
+            <h2 class="credit-title">Created by Nikola Stoyanov (<a href="https://instagram.com/dr.necrotix" target="_blank" rel="noreferrer noopener">Necrotix</a>)</h2>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-card">
+              <span id="sourceVoltageLabel">Източник</span>
+              <strong id="sourceVoltageStat">-- V</strong>
+            </div>
+            <div class="hero-card">
+              <span id="sourceCurrentLabel">Ток</span>
+              <strong id="sourceCurrentStat">-- A</strong>
+            </div>
+            <div class="hero-card">
+              <span id="circuitHealthLabel">Състояние</span>
+              <strong id="circuitHealthStat">Очаква схема</strong>
+            </div>
+          </div>
+        </header>
+
+        <section class="workspace-card">
+          <div class="workspace-toolbar">
+            <div class="workspace-meta">
+              <strong id="workspaceHeading">Схема</strong>
+              <span id="selectionSummary">Няма избран елемент</span>
+            </div>
+            <div class="workspace-actions">
+              <div class="history-controls">
+                <button class="ghost-btn" id="undoBtn" type="button" title="Назад (Ctrl+Z)">Назад</button>
+                <button class="ghost-btn" id="redoBtn" type="button" title="Напред (Ctrl+Y)">Напред</button>
+              </div>
+              <div class="zoom-controls">
+                <button class="ghost-btn zoom-btn" id="zoomOutBtn">−</button>
+                <button class="ghost-btn zoom-readout" id="zoomResetBtn">100%</button>
+                <button class="ghost-btn zoom-btn" id="zoomInBtn">+</button>
+              </div>
+              <button class="ghost-btn" id="importBtn">Import</button>
+              <button class="ghost-btn" id="exportBtn">Export</button>
+              <button class="ghost-btn" id="clearBtn">Изчисти</button>
+              <button class="ghost-btn" id="autoRunBtn" data-enabled="true">Авто-симулация: ВКЛ</button>
+            </div>
+          </div>
+
+          <div class="workspace-wrap" id="workspaceWrap">
+            <div class="workspace-stage" id="workspaceStage">
+              <svg id="workspace" viewBox="0 0 1280 760" aria-label="Редактор на електрическа схема">
+                <defs>
+                  <pattern id="gridPattern" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(151,163,198,0.08)" stroke-width="1"></path>
+                  </pattern>
+                  <linearGradient id="wireGlow" x1="0%" x2="100%" y1="0%" y2="0%">
+                    <stop offset="0%" stop-color="#38bdf8"></stop>
+                    <stop offset="100%" stop-color="#7c3aed"></stop>
+                  </linearGradient>
+                </defs>
+
+                <rect x="0" y="0" width="1280" height="760" fill="url(#gridPattern)"></rect>
+                <g id="wireLayer"></g>
+                <g id="componentLayer"></g>
+                <g id="nodeLayer"></g>
+                <g id="particleLayer"></g>
+              </svg>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <aside class="panel right-panel">
+        <div class="section section-inspector">
+          <div class="section-title-row">
+            <h2 id="inspectorHeading">Инспектор</h2>
+            <span class="hint" id="inspectorHint">редакция на избрания елемент</span>
+          </div>
+          <div id="inspector" class="inspector empty-state">
+            Избери компонент, за да редактираш стойности, полярност и поведение.
+          </div>
+        </div>
+
+        <div class="section section-diagnostics">
+          <div class="section-title-row">
+            <h2 id="diagnosticsHeading">Диагностика</h2>
+            <span class="hint" id="diagnosticsHint">защо веригата не работи</span>
+          </div>
+          <div id="diagnostics" class="diagnostics empty-state">
+            Все още няма анализ. Добави източник, товар и GND, след това натисни "Симулирай".
+          </div>
+        </div>
+
+        <div class="section section-voltages">
+          <div class="section-title-row">
+            <h2 id="voltagesHeading">Напрежения</h2>
+            <span class="hint" id="voltagesHint">възли и нива</span>
+          </div>
+          <div id="nodeReadout" class="node-readout empty-state">
+            След симулация тук ще се появят напреженията по възлите.
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <template id="paletteCardTemplate">
+      <button class="palette-card">
+        <span class="palette-icon"></span>
+        <span class="palette-copy">
+          <strong></strong>
+          <small></small>
+        </span>
+      </button>
+    </template>
+
+    <input id="importInput" type="file" accept=".json,application/json" hidden />
+    <input id="scanImageInput" type="file" accept="image/*" hidden />
+
+    <script src="webapp/core/project-io.js"></script>
+    <script src="webapp/simulation/topology.js"></script>
+    <script src="webapp/simulation/netlist.js"></script>
+    <script src="webapp/simulation/transient.js"></script>
+    <script src="webapp/gui/waveform-viewer.js"></script>
+    <script src="webapp/gui/frequency-viewer.js"></script>
+    <script src="webapp/gui/spice-workbench.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
