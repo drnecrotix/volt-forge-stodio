@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Project screenshots demonstrating the circuit workspace, transient waveform viewer, and schematic visualization
 - Initial GitHub-ready repository documentation
 - Contribution, conduct, and security policies
 - Issue and pull request templates
