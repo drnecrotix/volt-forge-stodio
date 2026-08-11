@@ -148,6 +148,14 @@ The web application launch command will be documented when its source and develo
 
 Watch the [releases page](https://github.com/drnecrotix/volt-forge-stodio/releases) and [changelog](CHANGELOG.md) for availability updates.
 
+## Roadmap
+
+Development is organized into public milestones covering the first source release, SPICE simulation workflows, schematic editing, the web track, and broader analysis support. See [ROADMAP.md](ROADMAP.md) for the current direction.
+
+## Support
+
+For usage questions, bug-report guidance, feature requests, and project support expectations, read [SUPPORT.md](SUPPORT.md). Security vulnerabilities should be reported privately according to [SECURITY.md](SECURITY.md).
+
 ## Contributing
 
 Ideas, bug reports, feature requests, documentation improvements, and code contributions are welcome. Before contributing:
