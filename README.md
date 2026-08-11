@@ -1,5 +1,6 @@
 # VoltForge Studio
 
+[![CI](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml/badge.svg)](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Project Status: Early Development](https://img.shields.io/badge/status-early%20development-orange.svg)](#project-status)
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
