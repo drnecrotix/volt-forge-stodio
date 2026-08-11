@@ -1,162 +1,83 @@
-# ⚡ VoltForge Studio
+# VoltForge Studio
 
-**Open-source circuit design studio for visually building, simulating,
-and analyzing electronic circuits with SPICE.**
-
-VoltForge Studio is an open-source electronic circuit design and
-simulation environment for **web and desktop**. It combines visual
-schematic editing, SPICE netlist generation, Ngspice simulation, project
-persistence, and transient waveform analysis in one workspace.
-
-> **Status:** Early development / MVP
-
-## ✨ Features
-
-### Desktop MVP
-
--   Place resistors, capacitors, voltage sources, and ground
--   Connect components with wires
--   Edit component values
--   Save and load projects as JSON
--   Generate Ngspice-compatible SPICE netlists
--   Run Ngspice simulations in batch mode
--   Plot transient analysis results in a waveform viewer
-
-### Web Prototype
-
--   Visual browser-based circuit workspace
--   Modular web architecture
--   JSON project import and export
--   Compatibility with desktop example projects
--   SPICE netlist generation in the browser
--   Transient waveform preview
--   CSV export from the waveform viewer
-
-## 🧩 Architecture
-
-VoltForge Studio currently has two parallel development tracks:
-
-**Web** - `index.html`, `styles.css`, `app.js` --- visual prototype -
-`webapp/core` --- project persistence and import compatibility -
-`webapp/simulation` --- SPICE netlist generation and transient preview -
-`webapp/gui` --- SPICE workbench and waveform viewer
-
-**Desktop** - `src/opencircuitlab/` --- Python desktop application -
-**PySide6** --- desktop interface - **Ngspice** --- circuit simulation
-backend
-
-## 📁 Repository Structure
-
-``` text
-.
-├── CONTRIBUTING.md
-├── LICENSE
-├── README.md
-├── docs/
-│   ├── developer-guide.md
-│   └── user-guide.md
-├── examples/
-│   ├── rc_step.json
-│   └── resistor_divider.json
-├── src/
-│   └── opencircuitlab/
-│       ├── main.py
-│       ├── core/
-│       ├── gui/
-│       └── simulation/
-├── tests/
-│   └── test_netlist_generator.py
-├── webapp/
-├── app.js
-├── index.html
-└── styles.css
-```
-
-## 🚀 Quick Start
-
-### Requirements
-
--   Python **3.10+**
--   Ngspice available in your system `PATH`
-
-### Install
-
-Clone the repository and enter the project directory:
-
-``` bash
-git clone https://github.com/drnecrotix/VoltForge-Studio.git
-cd VoltForge-Studio
-```
-
-Install the Python package in editable mode:
-
-``` bash
-pip install -e .
-```
-
-Install optional plotting support:
-
-``` bash
-pip install pyqtgraph
-```
-
-Make sure Ngspice is installed and available from your terminal:
-
-``` bash
-ngspice --version
-```
-
-### Run the Desktop App
-
-``` bash
-python -m opencircuitlab.main
-```
-
-## 🧪 Tests
-
-Run the test suite with Python's built-in `unittest`:
-
-``` bash
-python -m unittest discover -s tests
-```
-
-If required, set the project `src` directory in `PYTHONPATH` before
-running the tests.
-
-## 📚 Documentation
-
-More detailed documentation is available in:
-
--   [`docs/user-guide.md`](docs/user-guide.md) --- user guide
--   [`docs/developer-guide.md`](docs/developer-guide.md) --- developer
-    documentation
--   [`CONTRIBUTING.md`](CONTRIBUTING.md) --- contribution guide
-
-## 🗺️ Roadmap
-
-Future development can expand VoltForge Studio with:
-
--   More electronic components
--   Richer schematic symbols
--   Improved wire editing
--   Broader SPICE analysis support
--   More capable waveform visualization
--   Continued web and desktop workflow improvements
-
-## 🤝 Contributing
-
-Contributions, bug reports, feature ideas, and pull requests are
-welcome.
-
-Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) before contributing.
-
-## 📄 License
-
-VoltForge Studio is open-source software. See [`LICENSE`](LICENSE) for
-the license terms.
-
-------------------------------------------------------------------------
-
-### ⚡ VoltForge Studio
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Project Status: Early Development](https://img.shields.io/badge/status-early%20development-orange.svg)](#project-status)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Last Commit](https://img.shields.io/github/last-commit/drnecrotix/volt-forge-stodio)](https://github.com/drnecrotix/volt-forge-stodio/commits/main)
 
 **Design. Simulate. Analyze.**
+
+VoltForge Studio is an open-source circuit design environment for visually building, simulating, and analyzing electronic circuits with SPICE. The project aims to provide an approachable workspace for both web and desktop users, combining schematic editing, project persistence, netlist generation, simulation, and waveform analysis.
+
+## Overview
+
+The goal of VoltForge Studio is to make circuit exploration feel direct and visual without hiding the underlying engineering workflow. It is designed for students, hobbyists, educators, and engineers who want to move smoothly from a schematic to simulation results.
+
+## Features and Focus
+
+Planned and active areas of development include:
+
+- Visual schematic editing and component placement
+- Wire connections and editable component values
+- JSON-based project save, load, import, and export
+- Ngspice-compatible netlist generation
+- SPICE simulation workflows
+- Transient waveform visualization and CSV export
+- Consistent project compatibility across web and desktop experiences
+- Accessible, maintainable, and modular user interfaces
+
+## Technology and Project Tracks
+
+VoltForge Studio is being shaped around two complementary tracks:
+
+### Desktop application
+
+- Python 3.10+
+- PySide6 for the desktop interface
+- Ngspice as the simulation backend
+- Optional PyQtGraph-based waveform visualization
+
+### Web application
+
+- HTML, CSS, and JavaScript
+- Browser-based schematic workspace
+- Client-side project persistence and netlist generation
+- Modular simulation and waveform-viewer components
+
+The implementation is still evolving. Technical choices and repository structure may change before the first stable release.
+
+## Project Status
+
+VoltForge Studio is in early development. This repository currently provides the public project and collaboration foundation. Source code, examples, tests, and detailed documentation will be published as the implementation is prepared for release.
+
+## Getting Started
+
+The verified installation and run commands will be added with the first source release. The expected workflow will be:
+
+```bash
+git clone https://github.com/drnecrotix/volt-forge-stodio.git
+cd volt-forge-stodio
+
+# Installation and launch commands will be documented here.
+```
+
+Watch the [releases page](https://github.com/drnecrotix/volt-forge-stodio/releases) and [changelog](CHANGELOG.md) for availability updates.
+
+## Contributing
+
+Ideas, bug reports, feature requests, documentation improvements, and code contributions are welcome. Before contributing:
+
+1. Read [CONTRIBUTING.md](CONTRIBUTING.md).
+2. Follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+3. Use the provided issue or pull request template.
+
+Please report security vulnerabilities privately according to [SECURITY.md](SECURITY.md).
+
+## License
+
+VoltForge Studio is open-source software released under the [MIT License](LICENSE).
+
+## Contact
+
+- Project: <https://github.com/drnecrotix/volt-forge-stodio>
+- Maintainer: [@drnecrotix](https://github.com/drnecrotix)
