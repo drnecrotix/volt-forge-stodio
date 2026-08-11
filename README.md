@@ -13,6 +13,26 @@ VoltForge Studio is an open-source circuit design environment for visually build
 
 The goal of VoltForge Studio is to make circuit exploration feel direct and visual without hiding the underlying engineering workflow. It is designed for students, hobbyists, educators, and engineers who want to move smoothly from a schematic to simulation results.
 
+## Project Preview
+
+### Visual circuit workspace
+
+Build and inspect circuits in a focused workspace with component controls, live measurements, simulation status, and an editable schematic canvas.
+
+![VoltForge Studio visual circuit workspace](docs/images/voltforge-studio-workspace.png)
+
+### Transient waveform viewer
+
+Explore simulated signals, select individual traces, inspect cursor values, reset the viewport, and export waveform data as CSV.
+
+![VoltForge Studio transient waveform viewer](docs/images/transient-waveform-viewer.png)
+
+### Circuit schematic and live node values
+
+View a clean schematic representation with component labels, values, node voltages, and a clearly defined ground reference.
+
+![VoltForge Studio circuit schematic with live node values](docs/images/circuit-schematic.png)
+
 ## Features and Focus
 
 Planned and active areas of development include:
