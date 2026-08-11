@@ -7,13 +7,16 @@
 
 <p align="center">
   <a href="https://drnecrotix.github.io/volt-forge-stodio/"><img alt="Стартирай VoltForge Studio" src="https://img.shields.io/badge/🚀_Стартирай_VoltForge_Studio-Онлайн-2ea44f?style=for-the-badge"></a>
+  <a href="https://github.com/drnecrotix/volt-forge-stodio/releases"><img alt="Releases" src="https://img.shields.io/badge/📦_Releases-Windows_x64-8250df?style=for-the-badge"></a>
   <a href="README.md"><img alt="English README" src="https://img.shields.io/badge/🇬🇧_README-English-blue?style=for-the-badge"></a>
 </p>
 
 <p align="center">
+  <a href="https://github.com/drnecrotix/volt-forge-stodio/releases"><img alt="Версия 0.1.0" src="https://img.shields.io/badge/version-0.1.0-blue.svg"></a>
   <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/codeql.yml"><img alt="CodeQL" src="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/codeql.yml/badge.svg"></a>
   <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/pages.yml"><img alt="GitHub Pages" src="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/pages.yml/badge.svg"></a>
+  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/windows-build.yml"><img alt="Windows x64 Build" src="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/windows-build.yml/badge.svg"></a>
   <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/release.yml"><img alt="Release" src="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/release.yml/badge.svg"></a>
   <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
 </p>
@@ -27,6 +30,16 @@ Browser версията се публикува автоматично чрез
 ### [Стартирай VoltForge Studio →](https://drnecrotix.github.io/volt-forge-stodio/)
 
 Онлайн версията се обновява автоматично при промени по web приложението в `main`.
+
+## 📦 Desktop Builds
+
+VoltForge Studio има автоматизиран Windows x64 build pipeline с PyInstaller.
+
+- **Текуща package версия:** `0.1.0`
+- **Windows build workflow:** [Windows Desktop Build](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/windows-build.yml)
+- **Release downloads:** [GitHub Releases](https://github.com/drnecrotix/volt-forge-stodio/releases)
+
+Windows workflow artifacts се генерират от GitHub Actions. Публичните release downloads ще се появяват в Releases страницата при публикуване на version tag.
 
 ## ✨ Основни възможности
 
