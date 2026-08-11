@@ -1,0 +1,64 @@
+name: Windows Desktop Build
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "pyproject.toml"
+      - ".github/workflows/windows-build.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  windows-build:
+    name: Build Windows x64 package
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install project and build tools
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[plot]" pyinstaller
+          python -m pip check
+
+      - name: Run unit tests
+        shell: pwsh
+        run: python -m unittest discover -s tests -v
+
+      - name: Build desktop application
+        shell: pwsh
+        run: |
+          pyinstaller --noconfirm --clean --windowed `
+            --name "VoltForge-Studio" `
+            --collect-all PySide6 `
+            --collect-all pyqtgraph `
+            src/opencircuitlab/main.py
+
+      - name: Create Windows archive
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "dist/VoltForge-Studio/*" -DestinationPath "dist/VoltForge-Studio-Windows-x64.zip" -Force
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: VoltForge-Studio-Windows-x64
+          path: dist/VoltForge-Studio-Windows-x64.zip
+          if-no-files-found: error
+          retention-days: 30
