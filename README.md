@@ -52,14 +52,79 @@ VoltForge Studio is in early development. This repository currently provides the
 
 ## Getting Started
 
-The verified installation and run commands will be added with the first source release. The expected workflow will be:
+> **Source availability:** The application source has not been published in this repository yet. The commands below describe the intended desktop workflow and will become usable when the first source release adds the Python package files.
+
+### Prerequisites
+
+- Git
+- Python 3.10 or newer
+- Ngspice installed and available from your system `PATH`
+
+Confirm the required tools before continuing:
+
+```bash
+git --version
+python --version
+ngspice --version
+```
+
+On systems where Python 3 is exposed as `python3`, use `python3` in place of `python` throughout these instructions.
+
+### Clone the Repository
 
 ```bash
 git clone https://github.com/drnecrotix/volt-forge-stodio.git
 cd volt-forge-stodio
-
-# Installation and launch commands will be documented here.
 ```
+
+### Create a Virtual Environment
+
+Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+macOS and Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### Install the Desktop Application
+
+Upgrade the packaging tools, then install VoltForge Studio in editable mode:
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -e .
+```
+
+Install the optional plotting dependency if it is not included by the package configuration:
+
+```bash
+python -m pip install pyqtgraph
+```
+
+### Run the Desktop Application
+
+```bash
+python -m opencircuitlab.main
+```
+
+If Python cannot find `opencircuitlab`, confirm that the virtual environment is active and repeat `python -m pip install -e .` from the repository root.
+
+### Run the Tests
+
+```bash
+python -m unittest discover -s tests
+```
+
+### Web Application
+
+The web application launch command will be documented when its source and development tooling are published. No web installation command is currently claimed because the public repository does not yet contain the web application files.
 
 Watch the [releases page](https://github.com/drnecrotix/volt-forge-stodio/releases) and [changelog](CHANGELOG.md) for availability updates.
 
