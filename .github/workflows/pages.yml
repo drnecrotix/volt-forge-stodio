@@ -1,0 +1,54 @@
+name: Deploy Web App to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "styles.css"
+      - "app.js"
+      - "webapp/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy GitHub Pages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare static site
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          cp index.html styles.css app.js _site/
+          cp -R webapp _site/webapp
+          touch _site/.nojekyll
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
