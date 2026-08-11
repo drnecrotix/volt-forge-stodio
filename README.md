@@ -1,31 +1,51 @@
-# VoltForge Studio
+# ⚡ VoltForge Studio
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Project Status: Early Development](https://img.shields.io/badge/status-early%20development-orange.svg)](#project-status)
-[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![CI](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml/badge.svg)](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/codeql.yml/badge.svg)](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/codeql.yml)
-[![GitHub Pages](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/pages.yml/badge.svg)](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/pages.yml)
-[![Release](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/release.yml/badge.svg)](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/release.yml)
-[![Last Commit](https://img.shields.io/github/last-commit/drnecrotix/volt-forge-stodio)](https://github.com/drnecrotix/volt-forge-stodio/commits/main)
+<p align="center">
+  <strong>Design. Simulate. Analyze.</strong><br>
+  Open-source circuit design and simulation for web and desktop.
+</p>
 
-**Design. Simulate. Analyze.**
+<p align="center">
+  <a href="https://drnecrotix.github.io/volt-forge-stodio/"><img alt="Launch VoltForge Studio" src="https://img.shields.io/badge/🚀_Launch_VoltForge_Studio-Online-2ea44f?style=for-the-badge"></a>
+  <a href="README.bg.md"><img alt="Българска версия" src="https://img.shields.io/badge/🇧🇬_README-Български-blue?style=for-the-badge"></a>
+</p>
 
-VoltForge Studio is an open-source circuit design environment for visually building, simulating, and analyzing electronic circuits with SPICE. The project aims to provide an approachable workspace for both web and desktop users, combining schematic editing, project persistence, netlist generation, simulation, and waveform analysis.
+<p align="center">
+  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/codeql.yml"><img alt="CodeQL" src="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/codeql.yml/badge.svg"></a>
+  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/pages.yml"><img alt="GitHub Pages" src="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/pages.yml/badge.svg"></a>
+  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/release.yml"><img alt="Release" src="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/release.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
+</p>
 
-## Try it online
+VoltForge Studio is an open-source circuit design environment for visually building, simulating, and analyzing electronic circuits with SPICE. It combines schematic editing, project persistence, netlist generation, simulation workflows, waveform analysis, a browser application, and a Python desktop application in one project.
 
-The browser version is deployed with GitHub Pages:
+## 🚀 Try VoltForge Studio Online
 
-**https://drnecrotix.github.io/volt-forge-stodio/**
+The browser version is continuously deployed with GitHub Pages.
+
+### [Launch VoltForge Studio →](https://drnecrotix.github.io/volt-forge-stodio/)
 
 The live build is automatically redeployed whenever the web application changes on `main`.
 
-## Overview
+## ✨ Highlights
 
-The goal of VoltForge Studio is to make circuit exploration feel direct and visual without hiding the underlying engineering workflow. It is designed for students, hobbyists, educators, and engineers who want to move smoothly from a schematic to simulation results.
+- Visual schematic editing and component placement
+- Wire connections and editable component values
+- JSON project save, load, import, and export
+- Ngspice-compatible SPICE netlist generation
+- Simulation workflows and diagnostics
+- Transient waveform visualization and CSV export
+- Browser-based editor with GitHub Pages deployment
+- Python/PySide6 desktop application
+- Automated CI for Python 3.10, 3.11, and 3.12
+- JavaScript syntax validation
+- CodeQL security scanning
+- Dependabot dependency maintenance
+- Automated Windows x64 builds with PyInstaller
+- Automated release packaging with GitHub Actions
 
-## Project Preview
+## 🖥️ Project Preview
 
 ### Visual circuit workspace
 
@@ -45,44 +65,34 @@ View a clean schematic representation with component labels, values, node voltag
 
 ![VoltForge Studio circuit schematic with live node values](docs/images/circuit-schematic.png)
 
-## Features and Focus
-
-Implemented and active areas of development include:
-
-- Visual schematic editing and component placement
-- Wire connections and editable component values
-- JSON-based project save, load, import, and export
-- Ngspice-compatible netlist generation
-- SPICE simulation workflows
-- Transient waveform visualization and CSV export
-- Consistent project compatibility across web and desktop experiences
-- Accessible, maintainable, and modular user interfaces
-
-## Technology and Project Tracks
-
-VoltForge Studio is being shaped around two complementary tracks:
+## 🧩 Technology
 
 ### Desktop application
 
 - Python 3.10+
-- PySide6 for the desktop interface
-- Ngspice as the simulation backend
-- Optional PyQtGraph-based waveform visualization
+- PySide6
+- Ngspice simulation backend
+- Optional PyQtGraph waveform visualization
+- PyInstaller Windows builds
 
 ### Web application
 
-- HTML, CSS, and JavaScript
-- Browser-based schematic workspace
-- Client-side project persistence and netlist generation
-- Modular simulation and waveform-viewer components
+- HTML
+- CSS
+- JavaScript
+- Browser-based schematic editor
+- Client-side project persistence
+- SPICE netlist generation
+- Waveform visualization
+- GitHub Pages deployment
 
-The implementation is still evolving. Technical choices and repository structure may change before the first stable release.
+## 📌 Project Status
 
-## Project Status
+VoltForge Studio is in **early development**. The repository includes the Python desktop MVP, browser application, reusable web modules, automated checks, Windows builds, tests, example circuits, and user/developer documentation.
 
-VoltForge Studio is in early development. The repository includes the Python desktop MVP, browser application, reusable web modules, tests, example circuits, and user/developer documentation. Interfaces and technical choices may change before the first stable release.
+Interfaces, architecture, and technical choices may evolve before the first stable release.
 
-## Getting Started
+## 🛠️ Getting Started
 
 ### Prerequisites
 
@@ -90,7 +100,7 @@ VoltForge Studio is in early development. The repository includes the Python des
 - Python 3.10 or newer
 - Ngspice installed and available from your system `PATH`
 
-Confirm the required tools before continuing:
+Verify the required tools:
 
 ```bash
 git --version
@@ -98,16 +108,14 @@ python --version
 ngspice --version
 ```
 
-On systems where Python 3 is exposed as `python3`, use `python3` in place of `python` throughout these instructions.
-
-### Clone the Repository
+### Clone the repository
 
 ```bash
 git clone https://github.com/drnecrotix/volt-forge-stodio.git
 cd volt-forge-stodio
 ```
 
-### Create a Virtual Environment
+### Create a virtual environment
 
 Windows PowerShell:
 
@@ -123,48 +131,48 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### Install the Desktop Application
-
-Upgrade the packaging tools, then install VoltForge Studio in editable mode with waveform plotting support:
+### Install the desktop application
 
 ```bash
 python -m pip install --upgrade pip
 python -m pip install -e ".[plot]"
 ```
 
-### Run the Desktop Application
+### Run the desktop application
 
 ```bash
 python -m opencircuitlab.main
 ```
 
-After installation, the package entry point is also available:
+Or use the installed entry point:
 
 ```bash
 opencircuitlab
 ```
 
-If Python cannot find `opencircuitlab`, confirm that the virtual environment is active and repeat `python -m pip install -e .` from the repository root.
-
-### Run the Tests
+### Run tests
 
 ```bash
 python -m unittest discover -s tests
 ```
 
-### Web Application
+## 🌐 Web Application
 
-The web prototype has no package dependencies or build step. Start a local static server from the repository root:
+The browser application has no package dependencies or build step.
+
+Run it locally from the repository root:
 
 ```bash
 python -m http.server 8000
 ```
 
-Then open <http://localhost:8000> in a modern browser. Avoid opening `index.html` directly from the filesystem because browser security rules can interfere with module loading and import/export features.
+Then open `http://localhost:8000` in a modern browser.
 
-For the hosted version, use the [GitHub Pages deployment](https://drnecrotix.github.io/volt-forge-stodio/).
+For the hosted version, use:
 
-## Repository Layout
+### [🚀 Launch the live web app](https://drnecrotix.github.io/volt-forge-stodio/)
+
+## 📁 Repository Layout
 
 ```text
 .
@@ -179,43 +187,57 @@ For the hosted version, use the [GitHub Pages deployment](https://drnecrotix.git
 └── pyproject.toml        # Python package and dependency configuration
 ```
 
-## Releases
+## ✅ Automation and Quality
 
-Release builds are automated with GitHub Actions. Pushing a version tag such as `v0.1.0` will:
+VoltForge Studio uses GitHub Actions to automatically validate and package the project.
 
-1. install the project and run the unit tests;
-2. build both the source distribution and Python wheel;
-3. validate the distributions with Twine;
-4. upload the build output as a workflow artifact;
-5. create a GitHub Release with generated release notes and attach the built packages.
+Current automation includes:
 
-The release workflow can also be started manually from GitHub Actions to verify that a package build succeeds without creating a GitHub Release.
+- Python CI across supported Python versions
+- JavaScript syntax checks
+- CodeQL static security analysis
+- Dependabot dependency updates
+- GitHub Pages deployment
+- Windows x64 PyInstaller builds
+- Python source/wheel release packaging
 
-Watch the [releases page](https://github.com/drnecrotix/volt-forge-stodio/releases) and [changelog](CHANGELOG.md) for availability updates.
+## 📦 Releases
 
-## Roadmap
+Release builds are automated with GitHub Actions. Pushing a version tag such as `v0.1.0` can run tests, build distributable packages, validate them, and create release artifacts.
 
-Development is organized into public milestones covering the first source release, SPICE simulation workflows, schematic editing, the web track, and broader analysis support. See [ROADMAP.md](ROADMAP.md) for the current direction.
+See the [Releases](https://github.com/drnecrotix/volt-forge-stodio/releases) page and [CHANGELOG.md](CHANGELOG.md) for release history.
 
-## Support
+## 🗺️ Roadmap
 
-For usage questions, bug-report guidance, feature requests, and project support expectations, read [SUPPORT.md](SUPPORT.md). Security vulnerabilities should be reported privately according to [SECURITY.md](SECURITY.md).
+Development milestones cover simulation workflows, schematic editing, broader analysis support, desktop packaging, and continued improvements to the browser application.
 
-## Contributing
+See [ROADMAP.md](ROADMAP.md).
 
-Ideas, bug reports, feature requests, documentation improvements, and code contributions are welcome. Before contributing:
+## 🤝 Contributing
+
+Contributions, bug reports, feature requests, documentation improvements, and code reviews are welcome.
+
+Before contributing:
 
 1. Read [CONTRIBUTING.md](CONTRIBUTING.md).
 2. Follow the [Code of Conduct](CODE_OF_CONDUCT.md).
-3. Use the provided issue or pull request template.
+3. Use the provided issue and pull request templates.
+4. Report security vulnerabilities according to [SECURITY.md](SECURITY.md).
 
-Please report security vulnerabilities privately according to [SECURITY.md](SECURITY.md).
+## 🆘 Support
 
-## License
+See [SUPPORT.md](SUPPORT.md) for usage questions, bug-report guidance, feature requests, and support expectations.
+
+## 📄 License
 
 VoltForge Studio is open-source software released under the [MIT License](LICENSE).
 
-## Contact
+## 🌍 Language
 
-- Project: <https://github.com/drnecrotix/volt-forge-stodio>
-- Maintainer: [@drnecrotix](https://github.com/drnecrotix)
+- **English:** this document
+- **Български:** [README.bg.md](README.bg.md)
+
+## 👤 Maintainer
+
+- GitHub: [@drnecrotix](https://github.com/drnecrotix)
+- Project: [VoltForge Studio](https://github.com/drnecrotix/volt-forge-stodio)
