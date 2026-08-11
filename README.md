@@ -4,12 +4,22 @@
 [![Project Status: Early Development](https://img.shields.io/badge/status-early%20development-orange.svg)](#project-status)
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![CI](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml/badge.svg)](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/codeql.yml/badge.svg)](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/codeql.yml)
+[![GitHub Pages](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/pages.yml/badge.svg)](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/pages.yml)
 [![Release](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/release.yml/badge.svg)](https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/release.yml)
 [![Last Commit](https://img.shields.io/github/last-commit/drnecrotix/volt-forge-stodio)](https://github.com/drnecrotix/volt-forge-stodio/commits/main)
 
 **Design. Simulate. Analyze.**
 
 VoltForge Studio is an open-source circuit design environment for visually building, simulating, and analyzing electronic circuits with SPICE. The project aims to provide an approachable workspace for both web and desktop users, combining schematic editing, project persistence, netlist generation, simulation, and waveform analysis.
+
+## Try it online
+
+The browser version is deployed with GitHub Pages:
+
+**https://drnecrotix.github.io/volt-forge-stodio/**
+
+The live build is automatically redeployed whenever the web application changes on `main`.
 
 ## Overview
 
@@ -151,6 +161,8 @@ python -m http.server 8000
 ```
 
 Then open <http://localhost:8000> in a modern browser. Avoid opening `index.html` directly from the filesystem because browser security rules can interfere with module loading and import/export features.
+
+For the hosted version, use the [GitHub Pages deployment](https://drnecrotix.github.io/volt-forge-stodio/).
 
 ## Repository Layout
 
