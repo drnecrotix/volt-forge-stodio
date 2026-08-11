@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Replaced the accidentally selected Apache 2.0 license with the MIT License
+- Reworked the README to accurately describe the VoltForge Studio product, current status, and planned technology tracks
+
 ### Added
 
 - Initial GitHub-ready repository documentation

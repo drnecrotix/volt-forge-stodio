@@ -34,4 +34,4 @@ Use the appropriate GitHub issue template and provide enough context for someone
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the repository's [Apache License 2.0](LICENSE).
+By contributing, you agree that your contributions will be licensed under the repository's [MIT License](LICENSE).
