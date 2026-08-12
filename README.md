@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/voltforge-studio-banner.jpg" alt="VoltForge Studio banner" width="100%">
+</p>
+
 # ⚡ VoltForge Studio
 
 <p align="center">
