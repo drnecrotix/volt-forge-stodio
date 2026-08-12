@@ -17,11 +17,11 @@
 
 <p align="center">
   <a href="https://github.com/drnecrotix/volt-forge-stodio/releases"><img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-blue.svg"></a>
-  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/codeql.yml"><img alt="CodeQL" src="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/codeql.yml/badge.svg"></a>
-  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/pages.yml"><img alt="GitHub Pages" src="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/pages.yml/badge.svg"></a>
-  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/windows-build.yml"><img alt="Windows x64 Build" src="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/windows-build.yml/badge.svg"></a>
-  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/release.yml"><img alt="Release" src="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/release.yml/badge.svg"></a>
+  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/drnecrotix/volt-forge-stodio/ci.yml?label=CI"></a>
+  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/codeql.yml"><img alt="CodeQL" src="https://img.shields.io/github/actions/workflow/status/drnecrotix/volt-forge-stodio/codeql.yml?label=CodeQL"></a>
+  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/pages.yml"><img alt="GitHub Pages" src="https://img.shields.io/github/actions/workflow/status/drnecrotix/volt-forge-stodio/pages.yml?label=GitHub%20Pages"></a>
+  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/windows-build.yml"><img alt="Windows x64 Build" src="https://img.shields.io/github/actions/workflow/status/drnecrotix/volt-forge-stodio/windows-build.yml?label=Windows%20x64%20Build"></a>
+  <a href="https://github.com/drnecrotix/volt-forge-stodio/actions/workflows/release.yml"><img alt="Release" src="https://img.shields.io/github/actions/workflow/status/drnecrotix/volt-forge-stodio/release.yml?label=Release"></a>
   <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
 </p>
 
@@ -200,7 +200,7 @@ For the hosted version, use:
 ├── webapp/               # Reusable browser modules
 ├── app.js                # Main browser application
 ├── index.html            # Web entry point
-├── styles.css            # Web interface styles
+├── styles.css             # Web interface styles
 └── pyproject.toml        # Python package and dependency configuration
 ```
 
