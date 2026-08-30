@@ -28,6 +28,8 @@
     contextTab: "voltforge.v2.contextTab",
   };
 
+  let pendingCanvasFocus = null;
+
   function readBoolean(key, fallback) {
     const value = localStorage.getItem(key);
     if (value === null) return fallback;
@@ -138,13 +140,6 @@
     if (node) new MutationObserver(syncDockLabels).observe(node, { childList: true, characterData: true, subtree: true });
   });
 
-  function parseComponentPosition(component) {
-    const transform = component?.getAttribute("transform") || "";
-    const match = transform.match(/translate\(\s*(-?\d+(?:\.\d+)?)\s*[ ,]\s*(-?\d+(?:\.\d+)?)/i);
-    if (!match) return null;
-    return { x: Number(match[1]), y: Number(match[2]) };
-  }
-
   function ensureCanvasExtent() {
     if (!workspaceSvg || !workspaceStage || !workspaceWrap) return;
     const svgWidth = parseFloat(workspaceSvg.style.width) || workspaceSvg.getBoundingClientRect().width;
@@ -153,48 +148,76 @@
     if (svgHeight > 0) workspaceStage.style.height = `${Math.max(svgHeight + 600, workspaceWrap.clientHeight)}px`;
   }
 
-  function focusWorldPoint(x, y) {
-    if (!workspaceSvg || !workspaceWrap || !Number.isFinite(x) || !Number.isFinite(y)) return;
+  function afterLayout(callback) {
+    requestAnimationFrame(() => requestAnimationFrame(callback));
+  }
+
+  function revealRenderedComponent(component) {
+    if (!component || !workspaceWrap) return false;
     ensureCanvasExtent();
-    const viewBox = workspaceSvg.viewBox?.baseVal;
-    if (!viewBox?.width || !viewBox?.height) return;
 
-    const svgRect = workspaceSvg.getBoundingClientRect();
-    const wrapRect = workspaceWrap.getBoundingClientRect();
-    if (!svgRect.width || !svgRect.height) return;
-
-    const scaleX = svgRect.width / viewBox.width;
-    const scaleY = svgRect.height / viewBox.height;
-    const originX = svgRect.left - wrapRect.left + workspaceWrap.scrollLeft;
-    const originY = svgRect.top - wrapRect.top + workspaceWrap.scrollTop;
-    const renderedX = originX + (x - viewBox.x) * scaleX;
-    const renderedY = originY + (y - viewBox.y) * scaleY;
-    const maxLeft = Math.max(0, workspaceWrap.scrollWidth - workspaceWrap.clientWidth);
-    const maxTop = Math.max(0, workspaceWrap.scrollHeight - workspaceWrap.clientHeight);
-
-    workspaceWrap.scrollLeft = Math.max(0, Math.min(maxLeft, renderedX - workspaceWrap.clientWidth / 2));
-    workspaceWrap.scrollTop = Math.max(0, Math.min(maxTop, renderedY - workspaceWrap.clientHeight / 2));
+    try {
+      component.scrollIntoView({
+        behavior: "auto",
+        block: "center",
+        inline: "center",
+      });
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   function focusSelectedComponent() {
     const selected = componentLayer?.querySelector(".component.selected") || componentLayer?.querySelector(".component");
-    const point = parseComponentPosition(selected);
-    if (point) focusWorldPoint(point.x, point.y);
-  }
+    if (revealRenderedComponent(selected)) return;
 
-  function focusCircuitCenter() {
     const components = [...(componentLayer?.querySelectorAll(".component") || [])];
-    const points = components.map(parseComponentPosition).filter(Boolean);
-    if (!points.length) return;
-    const minX = Math.min(...points.map((point) => point.x));
-    const maxX = Math.max(...points.map((point) => point.x));
-    const minY = Math.min(...points.map((point) => point.y));
-    const maxY = Math.max(...points.map((point) => point.y));
-    focusWorldPoint((minX + maxX) / 2, (minY + maxY) / 2);
+    if (components.length) revealRenderedComponent(components[0]);
   }
 
-  function afterLayout(callback) {
-    requestAnimationFrame(() => requestAnimationFrame(callback));
+  function focusCircuit() {
+    const selected = componentLayer?.querySelector(".component.selected");
+    if (revealRenderedComponent(selected)) return;
+
+    const components = [...(componentLayer?.querySelectorAll(".component") || [])];
+    if (!components.length) return;
+
+    // Samples are compact, so centering the first rendered component keeps the
+    // whole starter circuit inside the viewport at the default 100% zoom.
+    revealRenderedComponent(components[0]);
+  }
+
+  function requestCanvasFocus(mode) {
+    pendingCanvasFocus = mode;
+  }
+
+  function flushCanvasFocus() {
+    if (!pendingCanvasFocus) return;
+    const mode = pendingCanvasFocus;
+    pendingCanvasFocus = null;
+    afterLayout(() => {
+      ensureCanvasExtent();
+      if (mode === "selected") focusSelectedComponent();
+      else focusCircuit();
+    });
+  }
+
+  // Capture the intent before app.js handles the click and rebuilds the SVG.
+  document.addEventListener("click", (event) => {
+    if (event.target.closest?.(".sample-btn[data-sample]")) {
+      requestCanvasFocus("circuit");
+      return;
+    }
+    if (event.target.closest?.(".palette-card") || event.target.closest?.("#addComponentBtn")) {
+      requestCanvasFocus("selected");
+    }
+  }, true);
+
+  if (componentLayer) {
+    new MutationObserver(() => {
+      if (pendingCanvasFocus) flushCanvasFocus();
+    }).observe(componentLayer, { childList: true, subtree: true });
   }
 
   document.addEventListener("click", (event) => {
@@ -205,9 +228,10 @@
         button.classList.toggle("active", active);
         button.setAttribute("aria-pressed", String(active));
       });
+
+      // Fallback in case the render did not create a mutation in this frame.
       afterLayout(() => {
-        ensureCanvasExtent();
-        focusCircuitCenter();
+        if (pendingCanvasFocus) flushCanvasFocus();
         if (window.matchMedia("(max-width: 1500px)").matches) setCollapsed("library", true);
       });
       return;
@@ -215,8 +239,7 @@
 
     if (event.target.closest?.(".palette-card") || event.target.closest?.("#addComponentBtn")) {
       afterLayout(() => {
-        ensureCanvasExtent();
-        focusSelectedComponent();
+        if (pendingCanvasFocus) flushCanvasFocus();
       });
     }
   });
@@ -233,7 +256,7 @@
 
     if (!typing && event.key.toLowerCase() === "f") {
       event.preventDefault();
-      afterLayout(focusCircuitCenter);
+      afterLayout(focusCircuit);
       return;
     }
 
@@ -256,7 +279,7 @@
   window.addEventListener("resize", () => afterLayout(ensureCanvasExtent));
   afterLayout(() => {
     ensureCanvasExtent();
-    focusCircuitCenter();
+    focusCircuit();
   });
 
   shell.dataset.uiReady = "true";
