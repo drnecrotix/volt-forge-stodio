@@ -152,20 +152,34 @@
     requestAnimationFrame(() => requestAnimationFrame(callback));
   }
 
+  function clampScroll(value, max) {
+    return Math.max(0, Math.min(max, value));
+  }
+
+  function scrollWorkspaceToClientPoint(clientX, clientY) {
+    if (!workspaceWrap || !Number.isFinite(clientX) || !Number.isFinite(clientY)) return false;
+
+    const wrapRect = workspaceWrap.getBoundingClientRect();
+    const contentX = workspaceWrap.scrollLeft + (clientX - wrapRect.left);
+    const contentY = workspaceWrap.scrollTop + (clientY - wrapRect.top);
+    const maxLeft = Math.max(0, workspaceWrap.scrollWidth - workspaceWrap.clientWidth);
+    const maxTop = Math.max(0, workspaceWrap.scrollHeight - workspaceWrap.clientHeight);
+
+    workspaceWrap.scrollTo({
+      left: clampScroll(contentX - workspaceWrap.clientWidth / 2, maxLeft),
+      top: clampScroll(contentY - workspaceWrap.clientHeight / 2, maxTop),
+      behavior: "auto",
+    });
+    return true;
+  }
+
   function revealRenderedComponent(component) {
     if (!component || !workspaceWrap) return false;
     ensureCanvasExtent();
 
-    try {
-      component.scrollIntoView({
-        behavior: "auto",
-        block: "center",
-        inline: "center",
-      });
-      return true;
-    } catch (_) {
-      return false;
-    }
+    const rect = component.getBoundingClientRect();
+    if (!rect.width && !rect.height) return false;
+    return scrollWorkspaceToClientPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
   }
 
   function focusSelectedComponent() {
@@ -177,15 +191,24 @@
   }
 
   function focusCircuit() {
-    const selected = componentLayer?.querySelector(".component.selected");
-    if (revealRenderedComponent(selected)) return;
-
     const components = [...(componentLayer?.querySelectorAll(".component") || [])];
-    if (!components.length) return;
+    if (!components.length || !workspaceWrap) return;
 
-    // Samples are compact, so centering the first rendered component keeps the
-    // whole starter circuit inside the viewport at the default 100% zoom.
-    revealRenderedComponent(components[0]);
+    ensureCanvasExtent();
+    const rects = components
+      .map((component) => component.getBoundingClientRect())
+      .filter((rect) => rect.width || rect.height);
+    if (!rects.length) return;
+
+    const minLeft = Math.min(...rects.map((rect) => rect.left));
+    const maxRight = Math.max(...rects.map((rect) => rect.right));
+    const minTop = Math.min(...rects.map((rect) => rect.top));
+    const maxBottom = Math.max(...rects.map((rect) => rect.bottom));
+
+    scrollWorkspaceToClientPoint(
+      (minLeft + maxRight) / 2,
+      (minTop + maxBottom) / 2,
+    );
   }
 
   function requestCanvasFocus(mode) {
