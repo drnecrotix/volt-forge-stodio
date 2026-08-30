@@ -148,13 +148,13 @@
       if (button.dataset.v2ExampleBound === "true") return;
       button.dataset.v2ExampleBound = "true";
       button.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-
         const sampleName = button.dataset.sample;
         if (!sampleName || typeof window.loadSample !== "function") return;
 
+        event.preventDefault();
+        event.stopImmediatePropagation();
         window.loadSample(sampleName);
+
         document.querySelectorAll(".sample-btn[data-sample]").forEach((sampleButton) => {
           const active = sampleButton === button;
           sampleButton.classList.toggle("active", active);
