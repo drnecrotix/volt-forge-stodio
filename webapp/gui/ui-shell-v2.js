@@ -66,6 +66,7 @@
       const active = tab.dataset[`${kind}Tab`] === name;
       tab.classList.toggle("active", active);
       tab.setAttribute("aria-selected", String(active));
+      tab.tabIndex = active ? 0 : -1;
     });
 
     panels.forEach((panel) => {
@@ -78,14 +79,16 @@
   }
 
   document.querySelectorAll("[data-library-tab]").forEach((tab) => {
-    tab.addEventListener("click", () => {
+    tab.addEventListener("click", (event) => {
+      event.preventDefault();
       setCollapsed("library", false);
       activateTab("library", tab.dataset.libraryTab);
     });
   });
 
   document.querySelectorAll("[data-context-tab]").forEach((tab) => {
-    tab.addEventListener("click", () => {
+    tab.addEventListener("click", (event) => {
+      event.preventDefault();
       setCollapsed("context", false);
       activateTab("context", tab.dataset.contextTab);
     });
@@ -139,6 +142,36 @@
     const node = document.getElementById(id);
     if (node) new MutationObserver(syncDockLabels).observe(node, { childList: true, characterData: true, subtree: true });
   });
+
+  function bindExampleButtons() {
+    document.querySelectorAll(".sample-btn[data-sample]").forEach((button) => {
+      if (button.dataset.v2ExampleBound === "true") return;
+      button.dataset.v2ExampleBound = "true";
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        const sampleName = button.dataset.sample;
+        if (!sampleName || typeof window.loadSample !== "function") return;
+
+        window.loadSample(sampleName);
+        document.querySelectorAll(".sample-btn[data-sample]").forEach((sampleButton) => {
+          const active = sampleButton === button;
+          sampleButton.classList.toggle("active", active);
+          sampleButton.setAttribute("aria-pressed", String(active));
+        });
+
+        requestAnimationFrame(() => {
+          window.dispatchEvent(new Event("resize"));
+          if (window.matchMedia("(max-width: 1500px)").matches) {
+            setCollapsed("library", true);
+          }
+        });
+      }, true);
+    });
+  }
+
+  bindExampleButtons();
 
   document.addEventListener("keydown", (event) => {
     const target = event.target;
