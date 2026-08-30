@@ -16,6 +16,10 @@
   const palette = document.getElementById("palette");
   const simulateBtn = document.getElementById("simulateBtn");
   const runBtn = document.getElementById("v2RunBtn");
+  const workspaceWrap = document.getElementById("workspaceWrap");
+  const workspaceStage = document.getElementById("workspaceStage");
+  const workspaceSvg = document.getElementById("workspace");
+  const componentLayer = document.getElementById("componentLayer");
 
   const STORAGE = {
     library: "voltforge.v2.libraryCollapsed",
@@ -31,12 +35,10 @@
   }
 
   function setCollapsed(kind, collapsed, persist = true) {
-    const className = `${kind}-collapsed`;
-    shell.classList.toggle(className, collapsed);
+    shell.classList.toggle(`${kind}-collapsed`, collapsed);
     if (persist) localStorage.setItem(STORAGE[kind], String(collapsed));
-
     const panel = kind === "library" ? libraryPanel : contextPanel;
-    if (panel) panel.setAttribute("aria-hidden", String(collapsed));
+    panel?.setAttribute("aria-hidden", String(collapsed));
   }
 
   const narrowViewport = window.matchMedia("(max-width: 1040px)").matches;
@@ -44,8 +46,7 @@
   setCollapsed("context", readBoolean(STORAGE.context, narrowViewport), false);
 
   function togglePanel(kind) {
-    const collapsed = shell.classList.contains(`${kind}-collapsed`);
-    setCollapsed(kind, !collapsed);
+    setCollapsed(kind, !shell.classList.contains(`${kind}-collapsed`));
   }
 
   libraryToggleBtn?.addEventListener("click", () => togglePanel("library"));
@@ -55,11 +56,8 @@
   contextCloseBtn?.addEventListener("click", () => setCollapsed("context", true));
 
   function activateTab(kind, name, persist = true) {
-    const tabSelector = `[data-${kind}-tab]`;
-    const panelSelector = `[data-${kind}-panel]`;
-    const tabs = [...document.querySelectorAll(tabSelector)];
-    const panels = [...document.querySelectorAll(panelSelector)];
-
+    const tabs = [...document.querySelectorAll(`[data-${kind}-tab]`)];
+    const panels = [...document.querySelectorAll(`[data-${kind}-panel]`)];
     if (!tabs.some((tab) => tab.dataset[`${kind}Tab`] === name)) return;
 
     tabs.forEach((tab) => {
@@ -111,9 +109,7 @@
   }
 
   componentSearch?.addEventListener("input", filterPalette);
-  if (palette) {
-    new MutationObserver(filterPalette).observe(palette, { childList: true, subtree: true });
-  }
+  if (palette) new MutationObserver(filterPalette).observe(palette, { childList: true, subtree: true });
 
   runBtn?.addEventListener("click", () => simulateBtn?.click());
 
@@ -137,41 +133,93 @@
   }
   syncDockLabels();
 
-  const headingIds = ["componentsHeading", "samplesHeading", "guideHeading", "inspectorHeading", "diagnosticsHeading", "voltagesHeading"];
-  headingIds.forEach((id) => {
+  ["componentsHeading", "samplesHeading", "guideHeading", "inspectorHeading", "diagnosticsHeading", "voltagesHeading"].forEach((id) => {
     const node = document.getElementById(id);
     if (node) new MutationObserver(syncDockLabels).observe(node, { childList: true, characterData: true, subtree: true });
   });
 
-  function bindExampleButtons() {
-    document.querySelectorAll(".sample-btn[data-sample]").forEach((button) => {
-      if (button.dataset.v2ExampleBound === "true") return;
-      button.dataset.v2ExampleBound = "true";
-      button.addEventListener("click", (event) => {
-        const sampleName = button.dataset.sample;
-        if (!sampleName || typeof window.loadSample !== "function") return;
-
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        window.loadSample(sampleName);
-
-        document.querySelectorAll(".sample-btn[data-sample]").forEach((sampleButton) => {
-          const active = sampleButton === button;
-          sampleButton.classList.toggle("active", active);
-          sampleButton.setAttribute("aria-pressed", String(active));
-        });
-
-        requestAnimationFrame(() => {
-          window.dispatchEvent(new Event("resize"));
-          if (window.matchMedia("(max-width: 1500px)").matches) {
-            setCollapsed("library", true);
-          }
-        });
-      }, true);
-    });
+  function parseComponentPosition(component) {
+    const transform = component?.getAttribute("transform") || "";
+    const match = transform.match(/translate\(\s*(-?\d+(?:\.\d+)?)\s*[ ,]\s*(-?\d+(?:\.\d+)?)/i);
+    if (!match) return null;
+    return { x: Number(match[1]), y: Number(match[2]) };
   }
 
-  bindExampleButtons();
+  function ensureCanvasExtent() {
+    if (!workspaceSvg || !workspaceStage || !workspaceWrap) return;
+    const svgWidth = parseFloat(workspaceSvg.style.width) || workspaceSvg.getBoundingClientRect().width;
+    const svgHeight = parseFloat(workspaceSvg.style.height) || workspaceSvg.getBoundingClientRect().height;
+    if (svgWidth > 0) workspaceStage.style.width = `${Math.max(svgWidth + 600, workspaceWrap.clientWidth)}px`;
+    if (svgHeight > 0) workspaceStage.style.height = `${Math.max(svgHeight + 600, workspaceWrap.clientHeight)}px`;
+  }
+
+  function focusWorldPoint(x, y) {
+    if (!workspaceSvg || !workspaceWrap || !Number.isFinite(x) || !Number.isFinite(y)) return;
+    ensureCanvasExtent();
+    const viewBox = workspaceSvg.viewBox?.baseVal;
+    if (!viewBox?.width || !viewBox?.height) return;
+
+    const svgRect = workspaceSvg.getBoundingClientRect();
+    const wrapRect = workspaceWrap.getBoundingClientRect();
+    if (!svgRect.width || !svgRect.height) return;
+
+    const scaleX = svgRect.width / viewBox.width;
+    const scaleY = svgRect.height / viewBox.height;
+    const originX = svgRect.left - wrapRect.left + workspaceWrap.scrollLeft;
+    const originY = svgRect.top - wrapRect.top + workspaceWrap.scrollTop;
+    const renderedX = originX + (x - viewBox.x) * scaleX;
+    const renderedY = originY + (y - viewBox.y) * scaleY;
+    const maxLeft = Math.max(0, workspaceWrap.scrollWidth - workspaceWrap.clientWidth);
+    const maxTop = Math.max(0, workspaceWrap.scrollHeight - workspaceWrap.clientHeight);
+
+    workspaceWrap.scrollLeft = Math.max(0, Math.min(maxLeft, renderedX - workspaceWrap.clientWidth / 2));
+    workspaceWrap.scrollTop = Math.max(0, Math.min(maxTop, renderedY - workspaceWrap.clientHeight / 2));
+  }
+
+  function focusSelectedComponent() {
+    const selected = componentLayer?.querySelector(".component.selected") || componentLayer?.querySelector(".component");
+    const point = parseComponentPosition(selected);
+    if (point) focusWorldPoint(point.x, point.y);
+  }
+
+  function focusCircuitCenter() {
+    const components = [...(componentLayer?.querySelectorAll(".component") || [])];
+    const points = components.map(parseComponentPosition).filter(Boolean);
+    if (!points.length) return;
+    const minX = Math.min(...points.map((point) => point.x));
+    const maxX = Math.max(...points.map((point) => point.x));
+    const minY = Math.min(...points.map((point) => point.y));
+    const maxY = Math.max(...points.map((point) => point.y));
+    focusWorldPoint((minX + maxX) / 2, (minY + maxY) / 2);
+  }
+
+  function afterLayout(callback) {
+    requestAnimationFrame(() => requestAnimationFrame(callback));
+  }
+
+  document.addEventListener("click", (event) => {
+    const sampleButton = event.target.closest?.(".sample-btn[data-sample]");
+    if (sampleButton) {
+      document.querySelectorAll(".sample-btn[data-sample]").forEach((button) => {
+        const active = button === sampleButton;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+      afterLayout(() => {
+        ensureCanvasExtent();
+        focusCircuitCenter();
+        if (window.matchMedia("(max-width: 1500px)").matches) setCollapsed("library", true);
+      });
+      return;
+    }
+
+    if (event.target.closest?.(".palette-card") || event.target.closest?.("#addComponentBtn")) {
+      afterLayout(() => {
+        ensureCanvasExtent();
+        focusSelectedComponent();
+      });
+    }
+  });
 
   document.addEventListener("keydown", (event) => {
     const target = event.target;
@@ -180,6 +228,12 @@
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "b") {
       event.preventDefault();
       togglePanel("library");
+      return;
+    }
+
+    if (!typing && event.key.toLowerCase() === "f") {
+      event.preventDefault();
+      afterLayout(focusCircuitCenter);
       return;
     }
 
@@ -194,12 +248,16 @@
     let wasEmpty = inspector.classList.contains("empty-state");
     new MutationObserver(() => {
       const isEmpty = inspector.classList.contains("empty-state");
-      if (wasEmpty && !isEmpty && !shell.classList.contains("context-collapsed")) {
-        activateTab("context", "inspector");
-      }
+      if (wasEmpty && !isEmpty && !shell.classList.contains("context-collapsed")) activateTab("context", "inspector");
       wasEmpty = isEmpty;
     }).observe(inspector, { attributes: true, childList: true, subtree: true, attributeFilter: ["class"] });
   }
+
+  window.addEventListener("resize", () => afterLayout(ensureCanvasExtent));
+  afterLayout(() => {
+    ensureCanvasExtent();
+    focusCircuitCenter();
+  });
 
   shell.dataset.uiReady = "true";
 })();
