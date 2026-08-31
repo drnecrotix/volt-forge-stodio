@@ -22,7 +22,7 @@ permissions:
 jobs:
   studio-functional-audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -65,12 +65,17 @@ jobs:
           sleep 2
 
       - name: Run Studio full functional audit
-        run: node scripts/studio-functional-audit-v2.mjs
+        shell: bash
+        run: |
+          set -o pipefail
+          timeout 120s node scripts/studio-functional-audit-v2.mjs | tee /tmp/voltforge-audit.log
 
-      - name: Print browser logs on failure
+      - name: Print audit and browser logs on failure
         if: failure()
         shell: bash
         run: |
+          echo "--- audit ---"
+          cat /tmp/voltforge-audit.log || true
           echo "--- static server ---"
           cat /tmp/voltforge-http.log || true
           echo "--- chrome ---"
