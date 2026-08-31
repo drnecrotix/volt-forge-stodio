@@ -12,7 +12,7 @@ on:
       - "styles-studio.css"
       - "app.js"
       - "webapp/**"
-      - "scripts/studio-functional-audit-v2.mjs"
+      - "scripts/studio-functional-final.mjs"
       - ".github/workflows/studio-functional-smoke.yml"
   workflow_dispatch:
 
@@ -68,7 +68,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          timeout 120s node scripts/studio-functional-audit-v2.mjs | tee /tmp/voltforge-audit.log
+          timeout 120s node scripts/studio-functional-final.mjs | tee /tmp/voltforge-audit.log
 
       - name: Print audit and browser logs on failure
         if: failure()
