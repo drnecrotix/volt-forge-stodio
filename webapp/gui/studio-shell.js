@@ -305,4 +305,5 @@
   document.body.scrollTop = 0;
   document.body.scrollLeft = 0;
   shell.dataset.studioReady = "true";
+  shell.dataset.visualTestReady = "true";
 })();
