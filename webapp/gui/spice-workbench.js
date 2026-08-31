@@ -163,3 +163,30 @@
 
   gui.SpiceWorkbench = SpiceWorkbench;
 })(window);
+
+/* Load the optional Studio functional UX layer without coupling it to index.html. */
+(function bootstrapVoltForgeStudioEnhancements() {
+  const cssHref = "webapp/gui/studio-enhancements.css";
+  const scriptSrc = "webapp/gui/studio-enhancements.js";
+
+  if (!document.querySelector(`link[href="${cssHref}"]`)) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = cssHref;
+    document.head.appendChild(link);
+  }
+
+  const loadScript = () => {
+    if (document.querySelector(`script[src="${scriptSrc}"]`)) return;
+    const script = document.createElement("script");
+    script.src = scriptSrc;
+    script.defer = true;
+    document.body.appendChild(script);
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadScript, { once: true });
+  } else {
+    loadScript();
+  }
+})();
