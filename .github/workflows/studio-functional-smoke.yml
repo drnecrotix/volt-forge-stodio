@@ -1,0 +1,84 @@
+name: Studio Full Functional Audit
+
+on:
+  push:
+    branches:
+      - feat/studio-full-functional-audit
+  pull_request:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "styles.css"
+      - "styles-studio.css"
+      - "app.js"
+      - "webapp/**"
+      - "scripts/studio-regression-audit.mjs"
+      - ".github/workflows/studio-functional-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  studio-functional-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Locate Chrome
+        id: chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then
+            echo "No Chrome/Chromium executable found on runner" >&2
+            exit 1
+          fi
+          echo "path=$CHROME" >> "$GITHUB_OUTPUT"
+
+      - name: Start app and headless Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8000 --bind 127.0.0.1 > /tmp/voltforge-http.log 2>&1 &
+          "${{ steps.chrome.outputs.path }}" \
+            --headless \
+            --no-sandbox \
+            --disable-gpu \
+            --disable-dev-shm-usage \
+            --no-first-run \
+            --no-default-browser-check \
+            --remote-debugging-address=127.0.0.1 \
+            --remote-debugging-port=9222 \
+            --remote-allow-origins='*' \
+            --user-data-dir=/tmp/voltforge-chrome \
+            --window-size=1800,1000 \
+            about:blank > /tmp/voltforge-chrome.log 2>&1 &
+          sleep 2
+
+      - name: Run Studio full functional audit
+        shell: bash
+        run: |
+          set -o pipefail
+          timeout 120s node scripts/studio-regression-audit.mjs | tee /tmp/voltforge-audit.log
+
+      - name: Print audit and browser logs on failure
+        if: failure()
+        shell: bash
+        run: |
+          echo "--- audit ---"
+          cat /tmp/voltforge-audit.log || true
+          echo "--- static server ---"
+          cat /tmp/voltforge-http.log || true
+          echo "--- chrome ---"
+          cat /tmp/voltforge-chrome.log || true
+
+# Stability rerun marker: 2026-08-31
