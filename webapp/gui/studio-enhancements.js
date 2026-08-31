@@ -20,6 +20,21 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* Assets: search across the whole catalog, not only current category. */
+  /* ------------------------------------------------------------------ */
+  const componentSearch = qs("#componentSearch");
+  if (componentSearch) {
+    componentSearch.addEventListener("input", () => {
+      const query = componentSearch.value.trim();
+      if (!query) return;
+      const allCategory = qs("#componentCategoryMenu .picker-category-btn");
+      if (allCategory && !allCategory.classList.contains("active")) {
+        allCategory.click();
+      }
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Tools: make Auto Wire and Manual Route clearly different.          */
   /* ------------------------------------------------------------------ */
   const toolMeta = {
@@ -30,12 +45,12 @@
     },
     wire: {
       label: "Авто проводник",
-      hint: "Кликни начален terminal, после краен terminal. Маршрутът се създава автоматично.",
+      hint: "Кликни начален terminal, после краен terminal. Клик в празно поле отменя започнатата връзка.",
       shortcut: "W",
     },
     pencil: {
       label: "Ръчно трасе",
-      hint: "Старт от terminal, кликове върху платното добавят чупки, последен клик върху terminal завършва.",
+      hint: "Старт от terminal, кликове върху платното добавят чупки, последен terminal завършва. Esc отказва.",
       shortcut: "P",
     },
     pan: {
@@ -86,6 +101,7 @@
 
   Object.entries(toolButtons).forEach(([name, button]) => {
     button?.addEventListener("click", () => {
+      refreshToolHelp();
       requestAnimationFrame(refreshToolHelp);
       const meta = toolMeta[name];
       if (meta) setStatus(meta.label, "info");
@@ -108,6 +124,7 @@
     if (shortcuts[key] && toolButtons[shortcuts[key]]) {
       event.preventDefault();
       toolButtons[shortcuts[key]].click();
+      refreshToolHelp();
       return;
     }
 
@@ -116,9 +133,26 @@
         window.clearPendingWire();
         if (typeof window.rerender === "function") window.rerender();
       }
+      toolButtons.select?.click();
+      refreshToolHelp();
       setStatus("Текущото действие е отменено", "info");
     }
   });
+
+  /* Auto Wire starts only on a terminal. Clicking empty canvas while a preview
+     exists cancels it instead of unexpectedly entering a pan gesture. */
+  const workspaceStage = qs("#workspaceStage");
+  workspaceStage?.addEventListener("pointerdown", (event) => {
+    if (getActiveTool() !== "wire" || !qs(".pending-wire-path")) return;
+    if (event.target.closest?.(".terminal-hit, .component, .wire-hit")) return;
+    if (typeof window.clearPendingWire === "function") {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      window.clearPendingWire();
+      if (typeof window.rerender === "function") window.rerender();
+      setStatus("Авто проводникът е отменен", "info");
+    }
+  }, true);
 
   /* ------------------------------------------------------------------ */
   /* Analysis menu: invoke the real workbench functions directly.       */
@@ -130,6 +164,51 @@
     frequencyBtn: "openFrequencyViewer",
     scanBtn: "openImageScanModal",
   };
+
+  let fallbackWaveformViewer = null;
+  let fallbackFrequencyViewer = null;
+
+  function hasOpenAnalysisWindow() {
+    return qsa(".analysis-modal").some((modal) => !modal.classList.contains("hidden"));
+  }
+
+  function openAnalysisFallback(id, message) {
+    const gui = window.VoltForgeWeb?.gui;
+    if (id === "waveformsBtn" && gui?.WaveformViewer) {
+      fallbackWaveformViewer ||= new gui.WaveformViewer();
+      fallbackWaveformViewer.setResult(null, {
+        eyebrow: "analysis",
+        title: "Transient графики",
+        export: "Export CSV",
+        reset: "Нулирай изгледа",
+        close: "Затвори",
+        noData: message || "Transient данните не са налични за текущата схема.",
+        placeholder: "Поправи проблемите в схемата или отвори Transient Analysis и опитай отново.",
+        cursor: "Курсор",
+      });
+      fallbackWaveformViewer.open();
+      return true;
+    }
+    if (id === "frequencyBtn" && gui?.FrequencyViewer) {
+      fallbackFrequencyViewer ||= new gui.FrequencyViewer();
+      fallbackFrequencyViewer.setPayload({
+        result: null,
+        labels: {
+          kicker: "analysis",
+          title: "Frequency analysis",
+          export: "Export CSV",
+          close: "Затвори",
+          empty: message || "Няма валидни transient данни за честотен анализ.",
+          summary: "Най-силен открит сигнал",
+          peak: "Peak voltage",
+          placeholder: "Поправи схемата и стартирай transient анализ.",
+        },
+      });
+      fallbackFrequencyViewer.open();
+      return true;
+    }
+    return false;
+  }
 
   document.addEventListener("click", (event) => {
     const item = event.target.closest?.("[data-menu='analysis'] [data-proxy-click]");
@@ -145,9 +224,18 @@
       closeStudioMenus();
       try {
         fn();
+        requestAnimationFrame(() => {
+          if (hasOpenAnalysisWindow()) return;
+          if (id !== "waveformsBtn" && id !== "frequencyBtn") return;
+          const message = qs("#statusChip")?.textContent || "Анализът не е наличен за текущата схема.";
+          if (openAnalysisFallback(id, message)) {
+            setStatus("Анализът е отворен с диагностична информация", "warning");
+          }
+        });
       } catch (error) {
         console.error(`VoltForge: ${functionName} failed`, error);
         setStatus("Анализът не можа да се отвори", "error");
+        openAnalysisFallback(id, error instanceof Error ? error.message : "Анализът не е наличен.");
       }
     }
   }, true);
@@ -268,6 +356,7 @@
           <button type="button" data-vf-diag-filter="warning">Предупреждения</button>
           <button type="button" data-vf-diag-filter="success">OK</button>
         </div>
+        <button type="button" class="vf-run-diagnostics" title="Стартирай симулация и обнови диагностиката">Провери</button>
         <button type="button" class="vf-copy-diagnostics" title="Копирай диагностиката">Копирай</button>
       </div>
     `;
@@ -278,6 +367,11 @@
         activeDiagnosticFilter = filter.dataset.vfDiagFilter;
         qsa("[data-vf-diag-filter]", diagnosticsDashboard).forEach((button) => button.classList.toggle("active", button === filter));
         refreshDiagnosticsDashboard();
+        return;
+      }
+      if (event.target.closest(".vf-run-diagnostics")) {
+        qs("#simulateBtn")?.click();
+        setStatus("Диагностиката е обновена", "success");
         return;
       }
       if (event.target.closest(".vf-copy-diagnostics")) {
@@ -317,9 +411,19 @@
     });
 
     const health = qs(".vf-diag-health", dashboard);
+    const healthTitle = qs(".vf-diag-health strong", dashboard);
     const latest = qs("[data-vf-diag-latest]", dashboard);
     const latestLine = lines.at(-1);
     if (latest) latest.textContent = latestLine?.textContent || "Няма диагностични събития";
+    if (healthTitle) {
+      healthTitle.textContent = counts.error > 0
+        ? `${counts.error} критични проблема`
+        : counts.warning > 0
+          ? `${counts.warning} предупреждения`
+          : counts.success > 0
+            ? "Веригата е проверена"
+            : "Диагностика";
+    }
     health?.classList.toggle("has-error", counts.error > 0);
     health?.classList.toggle("has-warning", counts.error === 0 && counts.warning > 0);
     health?.classList.toggle("is-healthy", counts.error === 0 && counts.warning === 0 && counts.success > 0);
@@ -347,7 +451,7 @@
     if (editorBody && !qs(".vf-editor-context", editorBody)) {
       const context = document.createElement("div");
       context.className = "vf-editor-context";
-      context.innerHTML = `<div><strong>Редактор на свойства</strong><small>Промените се прилагат към избрания елемент.</small></div><span class="vf-editor-selection"></span>`;
+      context.innerHTML = `<div><strong>Редактор на свойства</strong><small>Промените се прилагат веднага към избрания елемент.</small></div><span class="vf-editor-selection"></span>`;
       editorBody.prepend(context);
     }
     const selection = qs(".vf-editor-selection", editorBody || modal);
@@ -356,7 +460,10 @@
     qsa("input[type='number']", body).forEach((input) => {
       if (input.dataset.vfSafeNumber) return;
       input.dataset.vfSafeNumber = "true";
-      input.addEventListener("wheel", () => input.blur(), { passive: true });
+      input.addEventListener("wheel", (event) => {
+        event.preventDefault();
+        input.blur();
+      }, { passive: false });
       input.addEventListener("keydown", (event) => {
         if (event.key === "Enter") input.blur();
       });
