@@ -40,10 +40,7 @@
     return value === null ? fallback : value === "true";
   }
 
-  /* ------------------------------------------------------------------ */
-  /* Panels                                                             */
-  /* ------------------------------------------------------------------ */
-
+  /* Panels */
   function activateGroup(tabSelector, panelSelector, dataKey, panelKey, name, storageKey) {
     const tabs = [...document.querySelectorAll(tabSelector)];
     const panels = [...document.querySelectorAll(panelSelector)];
@@ -136,10 +133,7 @@
   assetsToggleBtn?.addEventListener("click", () => togglePanel("assets"));
   propertiesToggleBtn?.addEventListener("click", () => togglePanel("properties"));
 
-  /* ------------------------------------------------------------------ */
-  /* Keep translated labels in the Studio shell                         */
-  /* ------------------------------------------------------------------ */
-
+  /* Translation mirrors */
   const headingBindings = [
     ["componentsHeading", "[data-studio-tab='components']"],
     ["samplesHeading", "[data-studio-tab='samples']"],
@@ -169,10 +163,7 @@
     }
   });
 
-  /* ------------------------------------------------------------------ */
-  /* Menus                                                              */
-  /* ------------------------------------------------------------------ */
-
+  /* Menus */
   const menuTriggers = [...document.querySelectorAll("[data-menu-trigger]")];
   const menuPopovers = [...document.querySelectorAll("[data-menu]")];
 
@@ -222,10 +213,7 @@
     return true;
   }
 
-  /* ------------------------------------------------------------------ */
-  /* Native app.js canvas helpers                                       */
-  /* ------------------------------------------------------------------ */
-
+  /* Native canvas fallback - app.js remains the only owner of viewBox/zoom/pan. */
   function parseComponentPosition(component) {
     const transform = component?.getAttribute("transform") || "";
     const match = transform.match(/translate\(\s*(-?\d+(?:\.\d+)?)\s*[ ,]\s*(-?\d+(?:\.\d+)?)/i);
@@ -294,8 +282,6 @@
     scheduleNativeCenter("circuit");
   });
 
-  /* app.js already owns all real component/example events. This is only
-     a visual fallback after app.js has rendered the SVG. */
   let pendingCenter = null;
   document.addEventListener("click", (event) => {
     if (event.target.closest?.(".sample-btn[data-sample]")) {
@@ -316,10 +302,7 @@
     scheduleNativeCenter(mode);
   }).observe(componentLayer, { childList: true, subtree: true });
 
-  /* ------------------------------------------------------------------ */
-  /* Multi-document schematic tabs                                      */
-  /* ------------------------------------------------------------------ */
-
+  /* Multi-document manager */
   let documentCounter = 1;
   let activeDocumentId = 1;
   const documents = new Map();
@@ -369,7 +352,7 @@
   function renderDocumentTabs() {
     if (!documentTabsHost) return;
 
-    documentTabsHost.querySelectorAll(".document-tab[data-document-id], .document-add-tab").forEach((node) => node.remove());
+    documentTabsHost.querySelectorAll(".document-tab").forEach((node) => node.remove());
     const insertionPoint = getTabsInsertionPoint();
 
     documents.forEach((documentState) => {
@@ -381,7 +364,7 @@
       tab.innerHTML = `
         <span class="document-tab-dot" aria-hidden="true"></span>
         <span>${documentState.title}</span>
-        <small class="document-tab-close" role="button" aria-label="Затвори ${documentState.title}" title="Затвори">×</small>
+        <small class="document-tab-close" aria-label="Затвори ${documentState.title}" title="Затвори">×</small>
       `;
       documentTabsHost.insertBefore(tab, insertionPoint);
     });
@@ -436,7 +419,6 @@
     activeDocumentId = next.id;
     renderDocumentTabs();
 
-    /* Let app.js perform its own canonical reset. */
     clearBtn?.click();
 
     afterLayout(() => {
@@ -512,20 +494,14 @@
     switchDocument(documentId);
   });
 
-  /* ------------------------------------------------------------------ */
-  /* Menu actions                                                       */
-  /* ------------------------------------------------------------------ */
-
+  /* Menu actions - special-case New schematic so current document is saved first. */
   document.addEventListener("click", (event) => {
     const proxy = event.target.closest?.("[data-proxy-click]");
     if (!proxy) return;
     event.preventDefault();
 
-    if (proxy.dataset.proxyClick === "clearBtn") {
-      createNewDocument();
-    } else {
-      proxyClick(proxy.dataset.proxyClick);
-    }
+    if (proxy.dataset.proxyClick === "clearBtn") createNewDocument();
+    else proxyClick(proxy.dataset.proxyClick);
     closeMenus();
   });
 
@@ -550,10 +526,7 @@
     closeMenus();
   });
 
-  /* ------------------------------------------------------------------ */
-  /* Assets search and UI mirrors                                       */
-  /* ------------------------------------------------------------------ */
-
+  /* Assets and mirrors */
   function filterPalette() {
     if (!componentSearch || !palette) return;
     const query = componentSearch.value.trim().toLocaleLowerCase();
@@ -612,10 +585,7 @@
     });
   }
 
-  /* ------------------------------------------------------------------ */
-  /* Keyboard                                                           */
-  /* ------------------------------------------------------------------ */
-
+  /* Keyboard */
   document.addEventListener("keydown", (event) => {
     const target = event.target;
     const typing = target instanceof HTMLInputElement ||
