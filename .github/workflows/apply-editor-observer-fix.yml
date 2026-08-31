@@ -1,0 +1,59 @@
+name: Apply editor observer fix
+
+on:
+  push:
+    branches:
+      - feat/studio-full-functional-audit
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event.head_commit.message == 'chore: apply isolated editor observer fix'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/studio-full-functional-audit
+          fetch-depth: 0
+
+      - name: Make editor enhancement idempotent
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('webapp/gui/studio-enhancements.js')
+          text = path.read_text(encoding='utf-8')
+          old = '''    shell.classList.add("vf-component-editor-window");
+'''
+          new = '''    if (!shell.classList.contains("vf-component-editor-window")) {
+      shell.classList.add("vf-component-editor-window");
+    }
+'''
+          if old not in text:
+              raise SystemExit('missing editor shell patch target')
+          text = text.replace(old, new, 1)
+
+          old = '''    const selection = qs(".vf-editor-selection", editorBody || modal);
+    if (selection) selection.textContent = qs("#selectionSummary")?.textContent || "Избран елемент";
+'''
+          new = '''    const selection = qs(".vf-editor-selection", editorBody || modal);
+    if (selection) {
+      const nextSelection = qs("#selectionSummary")?.textContent || "Избран елемент";
+      if (selection.textContent !== nextSelection) selection.textContent = nextSelection;
+    }
+'''
+          if old not in text:
+              raise SystemExit('missing editor selection patch target')
+          text = text.replace(old, new, 1)
+          path.write_text(text, encoding='utf-8')
+
+      - name: Commit product fix and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/apply-editor-observer-fix.yml
+          git add webapp/gui/studio-enhancements.js
+          git commit -m "fix: stop component editor observer feedback loop"
+          git push origin HEAD:feat/studio-full-functional-audit
