@@ -28,7 +28,6 @@ jobs:
                   raise SystemExit(f'missing patch target: {label}')
               return text.replace(old, new, 1)
 
-          # Global Assets search instead of only searching the current category.
           path = Path('webapp/gui/studio-shell.js')
           text = path.read_text(encoding='utf-8')
           old = '''  function filterPalette() {
@@ -42,9 +41,6 @@ jobs:
           new = '''  function filterPalette() {
             if (!componentSearch || !palette) return;
             const query = componentSearch.value.trim().toLocaleLowerCase();
-
-            // Search is global. The palette normally follows the component picker
-            // category, so switch it to "All" once a search starts.
             if (query) {
               const allCategoryButton = document.querySelector("#componentCategoryMenu .picker-category-btn");
               if (allCategoryButton && !allCategoryButton.classList.contains("active")) {
@@ -53,7 +49,6 @@ jobs:
                 return;
               }
             }
-
             let matches = 0;
             palette.querySelectorAll(".palette-card").forEach((card) => {
               const hidden = Boolean(query) && !card.textContent.toLocaleLowerCase().includes(query);
@@ -66,7 +61,6 @@ jobs:
           text = replace_once(text, old, new, 'global palette search')
           path.write_text(text, encoding='utf-8')
 
-          # Native keyboard tools and manual-route Backspace behavior.
           path = Path('app.js')
           text = path.read_text(encoding='utf-8')
           old = '''    if ((event.key === "Delete" || event.key === "Backspace") && !isTypingTarget()) {
@@ -88,40 +82,23 @@ jobs:
 '''
           new = '''    if (event.key === "Backspace" && !isTypingTarget() && state.selectedTool === "pencil" && state.pendingWire) {
               event.preventDefault();
-              if (state.pendingWire.points.length) {
-                state.pendingWire.points.pop();
-              } else {
-                clearPendingWire();
-              }
+              if (state.pendingWire.points.length) state.pendingWire.points.pop();
+              else clearPendingWire();
               rerender();
               return;
             }
             if ((event.key === "Delete" || event.key === "Backspace") && !isTypingTarget()) {
-              if (state.selectedWireId) {
-                removeSelectedWire();
-              } else {
-                deleteSelectedComponent();
-              }
+              if (state.selectedWireId) removeSelectedWire();
+              else deleteSelectedComponent();
             }
-            if (event.key.toLowerCase() === "r" && !isTypingTarget()) {
-              rotateSelected();
-            }
-            if (event.key.toLowerCase() === "v" && !isTypingTarget()) {
-              setSelectedTool("select");
-            }
-            if (event.key.toLowerCase() === "w" && !isTypingTarget()) {
-              setSelectedTool("wire");
-            }
-            if (event.key.toLowerCase() === "p" && !isTypingTarget()) {
-              setSelectedTool("pencil");
-            }
-            if (event.key.toLowerCase() === "h" && !isTypingTarget()) {
-              setSelectedTool("pan");
-            }
+            if (event.key.toLowerCase() === "r" && !isTypingTarget()) rotateSelected();
+            if (event.key.toLowerCase() === "v" && !isTypingTarget()) setSelectedTool("select");
+            if (event.key.toLowerCase() === "w" && !isTypingTarget()) setSelectedTool("wire");
+            if (event.key.toLowerCase() === "p" && !isTypingTarget()) setSelectedTool("pencil");
+            if (event.key.toLowerCase() === "h" && !isTypingTarget()) setSelectedTool("pan");
 '''
           text = replace_once(text, old, new, 'native tool shortcuts')
 
-          # Empty canvas click cancels an unfinished auto-wire instead of unexpectedly panning.
           old = '''  const position = getMousePosition(event);
 
             if (terminal && ["wire", "pencil"].includes(state.selectedTool)) {
@@ -138,8 +115,6 @@ jobs:
 '''
           text = replace_once(text, old, new, 'auto-wire cancel')
 
-          # Analysis windows should always open. When transient data is invalid the
-          # viewer itself shows an empty/error state instead of appearing broken.
           old = '''  if (!state.packages.transient?.success) {
               statusChip.textContent = state.packages.transient?.error || t("status.transientUnavailable");
               return;
@@ -167,10 +142,9 @@ jobs:
           text = replace_once(text, old, new, 'frequency open on unavailable transient')
           path.write_text(text, encoding='utf-8')
 
-          # Tool HUD updates synchronously after the native app handler.
           path = Path('webapp/gui/studio-enhancements.js')
           text = path.read_text(encoding='utf-8')
-          text = text.replace('''    button?.addEventListener("click", () => {
+          text = replace_once(text, '''    button?.addEventListener("click", () => {
               requestAnimationFrame(refreshToolHelp);
               const meta = toolMeta[name];
               if (meta) setStatus(meta.label, "info");
@@ -181,7 +155,7 @@ jobs:
               const meta = toolMeta[name];
               if (meta) setStatus(meta.label, "info");
             });
-''', 1)
+''', 'tool click HUD sync')
 
           old = '''  document.addEventListener("keydown", (event) => {
             const target = event.target;
@@ -209,12 +183,9 @@ jobs:
             const target = event.target;
             const typing = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target?.isContentEditable;
             if (typing || event.ctrlKey || event.metaKey || event.altKey) return;
-
             const key = event.key.toLowerCase();
             const shortcuts = { v: "select", w: "wire", p: "pencil", h: "pan" };
             if (shortcuts[key]) {
-              // app.js owns the actual tool state. It is registered on window first,
-              // so only synchronize the Studio HUD here to avoid duplicate actions.
               requestAnimationFrame(() => {
                 refreshToolHelp();
                 const meta = toolMeta[shortcuts[key]];
@@ -222,7 +193,6 @@ jobs:
               });
               return;
             }
-
             if (event.key === "Escape") {
               requestAnimationFrame(refreshToolHelp);
               setStatus("Текущото действие е отменено", "info");
@@ -232,7 +202,6 @@ jobs:
           text = replace_once(text, old, new, 'tool shortcut HUD synchronization')
           path.write_text(text, encoding='utf-8')
 
-          # Fix the rotate test to re-query the rerendered SVG node.
           path = Path('scripts/studio-functional-smoke.mjs')
           text = path.read_text(encoding='utf-8')
           old = '''      const selected=document.querySelector('#componentLayer .component.selected') || node;
@@ -261,3 +230,4 @@ jobs:
           git add app.js webapp/gui/studio-shell.js webapp/gui/studio-enhancements.js scripts/studio-functional-smoke.mjs
           git commit -m "fix: address Studio functional audit failures"
           git push origin HEAD:feat/studio-full-functional-audit
+# trigger
