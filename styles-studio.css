@@ -227,3 +227,689 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .modal-card, .modal-content, .component-editor-shell, .guide-shell { border-color: #454b56 !important; background: #23262d !important; box-shadow: 0 28px 80px rgba(0,0,0,.55) !important; }
 @media (max-width: 1280px) { :root { --studio-assets: 270px; --studio-properties: 290px; } .studio-brand { min-width: 150px; } .document-pill { display: none; } .selection-inline { max-width: 230px; } }
 @media (max-width: 980px) { :root { --studio-assets: 260px; --studio-properties: 270px; } .app-menubar .menu-root:nth-child(5) { display: none; } .studio-shell.properties-collapsed { grid-template-columns: var(--studio-rail) var(--studio-assets) minmax(0,1fr) 0; } }
+
+/* Keep the 16000x12000 schematic world inside the visible Studio viewport. */
+.studio-shell { align-items: stretch; }
+.studio-canvas-panel { height: 100%; max-height: 100%; min-height: 0; overflow: hidden; }
+.workspace-card { height: 100%; max-height: 100%; min-height: 0; overflow: hidden; }
+.workspace-wrap { height: auto; max-height: 100%; min-height: 0; overflow: auto; }
+
+/* Studio UX readability pass */
+:root {
+  --studio-menu-row: 48px;
+  --studio-options-row: 50px;
+  --studio-topbar: 98px;
+  --studio-statusbar: 34px;
+  --studio-rail: 58px;
+  --studio-assets: 330px;
+  --studio-properties: 370px;
+}
+
+body {
+  font-size: 14px;
+}
+
+/* Main menu - keep popovers visually detached from the tool options row. */
+.studio-topbar,
+.menu-row,
+.options-row,
+.app-menubar,
+.menu-root {
+  overflow: visible;
+}
+
+.menu-row {
+  padding-inline: 10px;
+  gap: 10px;
+}
+
+.options-row {
+  padding-inline: 10px;
+  gap: 12px;
+}
+
+.studio-brand {
+  min-width: 190px;
+  gap: 10px;
+}
+
+.studio-brand .brand-mark {
+  width: 34px;
+  height: 34px;
+  font-size: 11px;
+}
+
+.brand-copy h1 {
+  font-size: 14px;
+}
+
+.brand-copy .eyebrow {
+  font-size: 10px;
+}
+
+.menu-trigger {
+  padding-inline: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.menu-popover {
+  top: calc(100% + var(--studio-options-row) + 8px);
+  min-width: 260px;
+  padding: 8px;
+  border: 1px solid #535a67;
+  border-radius: 9px;
+  background: #25282f;
+  box-shadow: 0 22px 58px rgba(0, 0, 0, .62), 0 0 0 1px rgba(255, 255, 255, .025);
+  z-index: 1400;
+}
+
+.menu-popover::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 18px;
+  width: 12px;
+  height: 12px;
+  border-left: 1px solid #535a67;
+  border-top: 1px solid #535a67;
+  background: #25282f;
+  transform: rotate(45deg);
+}
+
+.menu-popover button {
+  position: relative;
+  z-index: 1;
+  min-height: 36px;
+  padding-inline: 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.menu-popover kbd {
+  font-size: 10px;
+}
+
+.menu-separator {
+  margin-block: 6px;
+}
+
+.document-copy strong {
+  font-size: 12px;
+}
+
+.document-copy small {
+  font-size: 10px;
+}
+
+.primary-run {
+  min-height: 34px;
+  padding-inline: 14px;
+  font-size: 12px;
+}
+
+.lang-btn {
+  min-width: 32px;
+  height: 28px;
+  font-size: 10px;
+}
+
+.panel-toggle-button,
+.icon-command,
+.fit-button,
+.zoom-btn,
+.zoom-readout,
+.auto-run-command {
+  min-height: 34px;
+  height: 34px;
+  font-size: 12px;
+}
+
+.panel-toggle-button,
+.icon-command,
+.zoom-btn {
+  width: 34px;
+  min-width: 34px;
+}
+
+#undoBtn::before,
+#redoBtn::before {
+  font-size: 18px;
+}
+
+.fit-button {
+  padding-inline: 11px;
+  font-size: 12px;
+}
+
+.zoom-readout {
+  min-width: 60px;
+  padding-inline: 9px;
+  font-size: 12px;
+}
+
+.auto-run-command,
+.top-status {
+  font-size: 11px;
+}
+
+.top-status {
+  min-height: 31px;
+  max-width: 210px;
+  padding-inline: 10px;
+}
+
+.active-tool-icon {
+  width: 32px;
+  height: 32px;
+  font-size: 17px;
+}
+
+.active-tool-copy small {
+  font-size: 10px;
+}
+
+.active-tool-copy strong {
+  font-size: 12px;
+}
+
+.selection-inline {
+  max-width: 420px;
+  font-size: 11px;
+}
+
+/* Left tool rail - larger hit targets and readable tooltips. */
+.tool-rail {
+  padding: 8px 5px;
+  gap: 7px;
+}
+
+.tool-rail .toolbar-grid {
+  gap: 5px;
+}
+
+.tool-rail .tool-btn,
+.rail-bottom-button {
+  width: 46px;
+  min-width: 46px;
+  height: 46px;
+  min-height: 46px;
+  border-radius: 7px;
+}
+
+.tool-rail .tool-btn::before {
+  font-size: 21px;
+}
+
+#toolWireBtn::before {
+  font-size: 25px;
+}
+
+#toolPanBtn::before {
+  font-size: 19px;
+}
+
+#rotateBtn::before {
+  font-size: 23px;
+}
+
+#simulateBtn::before {
+  font-size: 15px;
+}
+
+.tool-rail button[title]::after {
+  left: calc(100% + 10px);
+  max-width: 240px;
+  padding: 7px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  line-height: 1.35;
+  z-index: 1500;
+}
+
+/* Side panels - improve reading density without wasting vertical space. */
+.panel-head {
+  height: 56px;
+  padding: 9px 11px 9px 13px;
+}
+
+.panel-head strong {
+  font-size: 14px;
+}
+
+.panel-head span {
+  font-size: 11px;
+}
+
+.panel-close {
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+}
+
+.asset-search-wrap {
+  height: 50px;
+  padding: 8px 10px;
+}
+
+.asset-search-wrap input {
+  height: 34px;
+  padding-inline: 10px;
+  font-size: 12px;
+}
+
+.panel-tabs {
+  height: 44px;
+  padding: 6px 7px 0;
+  gap: 3px;
+}
+
+.panel-tab {
+  height: 38px;
+  padding-inline: 10px;
+  font-size: 12px;
+}
+
+.asset-panel .panel-content {
+  height: calc(100% - 150px);
+}
+
+.properties-panel .panel-content {
+  height: calc(100% - 100px);
+}
+
+.asset-view,
+.property-view {
+  padding: 12px;
+  gap: 11px;
+  font-size: 13px;
+}
+
+.section-title-row h2 {
+  font-size: 12px;
+}
+
+.hint,
+.asset-section-label small,
+.panel-description {
+  font-size: 10px;
+}
+
+.asset-section-label {
+  font-size: 11px;
+}
+
+.component-picker-row {
+  gap: 8px;
+  position: relative;
+  z-index: 80;
+}
+
+.picker-trigger,
+.add-component-command {
+  height: 40px;
+  min-height: 40px;
+  font-size: 12px;
+}
+
+.picker-selected-icon {
+  width: 28px;
+  height: 28px;
+  font-size: 10px;
+}
+
+.picker-selected-label {
+  font-size: 12px;
+}
+
+.add-component-command {
+  min-width: 76px;
+  padding-inline: 11px;
+}
+
+.picker-dropdown.open {
+  z-index: 1000;
+}
+
+.picker-dropdown.open .picker-trigger {
+  border-color: rgba(89, 201, 255, .62);
+  box-shadow: 0 0 0 2px rgba(89, 201, 255, .1);
+}
+
+.picker-menu {
+  top: calc(100% + 10px);
+  padding: 9px;
+  border-color: #555d6b;
+  border-radius: 9px;
+  background: #292d34;
+  box-shadow: 0 22px 54px rgba(0, 0, 0, .6);
+  z-index: 1200;
+}
+
+.picker-category-btn {
+  padding: 7px 9px;
+  font-size: 11px;
+}
+
+.picker-back-btn,
+.picker-option {
+  padding: 9px 10px;
+  font-size: 12px;
+}
+
+.picker-option-copy small {
+  font-size: 10px;
+}
+
+.component-preview {
+  min-height: 66px;
+  padding: 10px;
+}
+
+.component-preview .palette-icon {
+  width: 40px;
+  height: 40px;
+  font-size: 11px;
+}
+
+.component-preview-copy strong,
+.palette-copy strong {
+  font-size: 12px;
+}
+
+.component-preview-copy small,
+.palette-copy small {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.palette {
+  gap: 5px;
+}
+
+.palette-card {
+  min-height: 54px;
+  padding: 8px 9px;
+  gap: 10px;
+}
+
+.palette-icon {
+  width: 37px;
+  height: 37px;
+  font-size: 10px;
+}
+
+.sample-btn {
+  min-height: 64px;
+  padding: 10px 12px 10px 46px;
+  font-size: 12px;
+}
+
+.sample-btn::after {
+  font-size: 10px;
+}
+
+.empty-state,
+.property-field,
+.diagnostic-card,
+.node-card,
+.inspector-card {
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.empty-state {
+  min-height: 108px;
+  padding: 13px;
+}
+
+.property-field,
+.diagnostic-card,
+.node-card,
+.inspector-card {
+  padding: 11px;
+}
+
+.property-field input,
+.property-field select {
+  min-height: 36px;
+  padding-inline: 10px;
+  font-size: 12px;
+}
+
+.inspector-actions button,
+.diagnostic-actions button {
+  min-height: 32px;
+  padding-inline: 10px;
+  font-size: 11px;
+}
+
+/* Document tabs - stronger active state and obvious New schematic action. */
+.workspace-card {
+  grid-template-rows: 44px minmax(0, 1fr);
+}
+
+.canvas-document-tabs {
+  height: 44px;
+  padding: 0 8px;
+  gap: 4px;
+  align-items: flex-end;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  background: #15171c;
+}
+
+.document-tab {
+  position: relative;
+  height: 38px;
+  min-width: 184px;
+  max-width: 270px;
+  margin: 0;
+  padding: 0 8px 0 12px;
+  gap: 9px;
+  border: 1px solid #363c46;
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  background: #1d2026;
+  color: #b9c1cc;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.document-tab:hover {
+  background: #272b32;
+  border-color: #4a515d;
+  color: #f1f4f7;
+}
+
+.document-tab.active {
+  background: #0e1014;
+  border-color: #4f5967;
+  color: #f5f7fa;
+  box-shadow: inset 0 3px 0 var(--studio-accent);
+}
+
+.document-tab-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  box-shadow: 0 0 0 3px rgba(89, 212, 154, .09);
+}
+
+.document-tab span:nth-child(2) {
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.document-tab-close {
+  width: 24px;
+  height: 24px;
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 5px;
+  color: #8993a1 !important;
+  font-size: 16px !important;
+  line-height: 1;
+}
+
+.document-tab-close:hover {
+  background: #373c45;
+  color: #ffffff !important;
+}
+
+.document-add-tab {
+  min-width: 132px;
+  max-width: 150px;
+  padding-inline: 12px;
+  border-color: transparent;
+  background: transparent;
+  color: #a9b3c0;
+}
+
+.document-add-tab:hover {
+  border-color: #3c444f;
+  background: #22262d;
+  color: #dff5ff;
+}
+
+.document-add-tab span {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  background: rgba(89, 201, 255, .1);
+  color: #aeeaff;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.document-add-tab::after {
+  content: 'Нова схема';
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.canvas-coordinate-hint {
+  padding: 0 10px 11px 6px;
+  font-size: 10px;
+}
+
+/* Canvas readability - labels stay legible on the dark schematic surface. */
+.component-label {
+  font-size: 18px;
+  font-weight: 720;
+  paint-order: stroke fill;
+  stroke: #0b0e12;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+.component-value {
+  font-size: 15px;
+  paint-order: stroke fill;
+  stroke: #0b0e12;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.node-voltage {
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.node-name {
+  font-size: 12px;
+}
+
+.wire-path {
+  stroke-width: 5px;
+}
+
+.wire-path.selected {
+  stroke-width: 6px;
+}
+
+/* Keep floating canvas controls usable at the larger UI scale. */
+.canvas-floating-controls {
+  right: 14px;
+  bottom: 14px;
+  min-height: 36px;
+  padding: 4px;
+  gap: 3px;
+}
+
+.canvas-floating-controls button {
+  min-width: 32px;
+  height: 29px;
+  padding-inline: 8px;
+  font-size: 11px;
+}
+
+.studio-statusbar {
+  padding-inline: 10px;
+  font-size: 10px;
+}
+
+.hero-card span {
+  font-size: 10px;
+}
+
+.hero-card strong {
+  font-size: 11px;
+}
+
+@media (max-width: 1400px) {
+  :root {
+    --studio-assets: 300px;
+    --studio-properties: 330px;
+  }
+
+  .document-pill {
+    display: none;
+  }
+
+  .selection-inline {
+    max-width: 260px;
+  }
+
+  .document-tab {
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 1100px) {
+  :root {
+    --studio-assets: 280px;
+    --studio-properties: 300px;
+  }
+
+  .studio-brand {
+    min-width: 160px;
+  }
+
+  .brand-copy .eyebrow,
+  .canvas-coordinate-hint {
+    display: none;
+  }
+
+  .menu-trigger {
+    padding-inline: 9px;
+  }
+
+  .document-add-tab {
+    min-width: 44px;
+    max-width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .document-add-tab::after {
+    display: none;
+  }
+}
