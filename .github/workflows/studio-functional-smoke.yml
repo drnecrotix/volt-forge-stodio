@@ -80,3 +80,5 @@ jobs:
           cat /tmp/voltforge-http.log || true
           echo "--- chrome ---"
           cat /tmp/voltforge-chrome.log || true
+
+# Stability rerun marker: 2026-08-31
