@@ -1,0 +1,74 @@
+name: Canvas Runtime Smoke
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "styles.css"
+      - "styles-studio.css"
+      - "app.js"
+      - "webapp/**"
+      - "scripts/canvas-smoke.mjs"
+      - ".github/workflows/canvas-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canvas-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Locate Chrome
+        id: chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then
+            echo "No Chrome/Chromium executable found on runner" >&2
+            exit 1
+          fi
+          echo "path=$CHROME" >> "$GITHUB_OUTPUT"
+          echo "Using $CHROME"
+
+      - name: Start static server and headless Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8000 --bind 127.0.0.1 > /tmp/voltforge-http.log 2>&1 &
+          echo $! > /tmp/voltforge-http.pid
+          "${{ steps.chrome.outputs.path }}" \
+            --headless=new \
+            --no-sandbox \
+            --disable-gpu \
+            --disable-dev-shm-usage \
+            --remote-debugging-port=9222 \
+            --user-data-dir=/tmp/voltforge-chrome \
+            --window-size=1800,1000 \
+            http://127.0.0.1:8000/ > /tmp/voltforge-chrome.log 2>&1 &
+          echo $! > /tmp/voltforge-chrome.pid
+          sleep 2
+
+      - name: Inspect canvas runtime
+        run: node scripts/canvas-smoke.mjs
+
+      - name: Print browser logs on failure
+        if: failure()
+        shell: bash
+        run: |
+          echo "--- static server ---"
+          cat /tmp/voltforge-http.log || true
+          echo "--- chrome ---"
+          cat /tmp/voltforge-chrome.log || true
