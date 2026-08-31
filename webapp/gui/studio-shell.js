@@ -35,45 +35,18 @@
     const tabs = [...document.querySelectorAll(tabSelector)];
     const panels = [...document.querySelectorAll(panelSelector)];
     if (!tabs.some((tab) => tab.dataset[dataKey] === name)) return;
-
     tabs.forEach((tab) => {
       const active = tab.dataset[dataKey] === name;
       tab.classList.toggle("active", active);
       tab.setAttribute("aria-selected", String(active));
       tab.tabIndex = active ? 0 : -1;
     });
-
     panels.forEach((panel) => {
       const active = panel.dataset[panelKey] === name;
       panel.classList.toggle("active", active);
       panel.hidden = !active;
     });
-
     if (storageKey) localStorage.setItem(storageKey, name);
-  }
-
-  function activateAssetTab(name, persist = true) {
-    setPanelCollapsed("assets", false);
-    activateGroup(
-      "[data-studio-tab]",
-      "[data-studio-panel]",
-      "studioTab",
-      "studioPanel",
-      name,
-      persist ? STORAGE.assetTab : null,
-    );
-  }
-
-  function activatePropertyTab(name, persist = true) {
-    setPanelCollapsed("properties", false);
-    activateGroup(
-      "[data-property-tab]",
-      "[data-property-panel]",
-      "propertyTab",
-      "propertyPanel",
-      name,
-      persist ? STORAGE.propertyTab : null,
-    );
   }
 
   function setPanelCollapsed(kind, collapsed, persist = true) {
@@ -91,33 +64,23 @@
     setPanelCollapsed(kind, !shell.classList.contains(className));
   }
 
+  function activateAssetTab(name, persist = true) {
+    setPanelCollapsed("assets", false);
+    activateGroup("[data-studio-tab]", "[data-studio-panel]", "studioTab", "studioPanel", name, persist ? STORAGE.assetTab : null);
+  }
+
+  function activatePropertyTab(name, persist = true) {
+    setPanelCollapsed("properties", false);
+    activateGroup("[data-property-tab]", "[data-property-panel]", "propertyTab", "propertyPanel", name, persist ? STORAGE.propertyTab : null);
+  }
+
   setPanelCollapsed("assets", storedBoolean(STORAGE.assetsCollapsed, false), false);
   setPanelCollapsed("properties", storedBoolean(STORAGE.propertiesCollapsed, false), false);
 
-  document.querySelectorAll("[data-studio-tab]").forEach((tab) => {
-    tab.addEventListener("click", () => activateAssetTab(tab.dataset.studioTab));
-  });
-
-  document.querySelectorAll("[data-property-tab]").forEach((tab) => {
-    tab.addEventListener("click", () => activatePropertyTab(tab.dataset.propertyTab));
-  });
-
-  activateGroup(
-    "[data-studio-tab]",
-    "[data-studio-panel]",
-    "studioTab",
-    "studioPanel",
-    localStorage.getItem(STORAGE.assetTab) || "components",
-    null,
-  );
-  activateGroup(
-    "[data-property-tab]",
-    "[data-property-panel]",
-    "propertyTab",
-    "propertyPanel",
-    localStorage.getItem(STORAGE.propertyTab) || "inspector",
-    null,
-  );
+  document.querySelectorAll("[data-studio-tab]").forEach((tab) => tab.addEventListener("click", () => activateAssetTab(tab.dataset.studioTab)));
+  document.querySelectorAll("[data-property-tab]").forEach((tab) => tab.addEventListener("click", () => activatePropertyTab(tab.dataset.propertyTab)));
+  activateGroup("[data-studio-tab]", "[data-studio-panel]", "studioTab", "studioPanel", localStorage.getItem(STORAGE.assetTab) || "components", null);
+  activateGroup("[data-property-tab]", "[data-property-panel]", "propertyTab", "propertyPanel", localStorage.getItem(STORAGE.propertyTab) || "inspector", null);
 
   const headingBindings = [
     ["componentsHeading", "[data-studio-tab='components']"],
@@ -135,19 +98,12 @@
       if (source && target && source.textContent.trim()) target.textContent = source.textContent.trim();
     });
   }
-
   syncTabLabels();
   headingBindings.forEach(([sourceId]) => {
     const source = document.getElementById(sourceId);
-    if (!source) return;
-    new MutationObserver(syncTabLabels).observe(source, {
-      childList: true,
-      characterData: true,
-      subtree: true,
-    });
+    if (source) new MutationObserver(syncTabLabels).observe(source, { childList: true, characterData: true, subtree: true });
   });
 
-  /* Desktop application menu behavior */
   const menuTriggers = [...document.querySelectorAll("[data-menu-trigger]")];
   const menuPopovers = [...document.querySelectorAll("[data-menu]")];
 
@@ -180,8 +136,7 @@
       event.stopPropagation();
       const name = trigger.dataset.menuTrigger;
       const menu = document.querySelector(`[data-menu='${name}']`);
-      if (menu && !menu.hidden) closeMenus();
-      else openMenu(name);
+      if (menu && !menu.hidden) closeMenus(); else openMenu(name);
     });
     trigger.addEventListener("pointerenter", () => {
       if (hasOpenMenu()) openMenu(trigger.dataset.menuTrigger);
@@ -208,29 +163,12 @@
   });
 
   function runMenuAction(action) {
-    switch (action) {
-      case "toggle-assets":
-        togglePanel("assets");
-        break;
-      case "toggle-properties":
-        togglePanel("properties");
-        break;
-      case "guide":
-      case "shortcuts":
-        activateAssetTab("guide");
-        break;
-      case "fit":
-        focusCircuit();
-        break;
-      case "rotate":
-        proxyClick("rotateBtn");
-        break;
-      case "delete":
-        window.dispatchEvent(new KeyboardEvent("keydown", { key: "Delete", bubbles: true }));
-        break;
-      default:
-        break;
-    }
+    if (action === "toggle-assets") togglePanel("assets");
+    else if (action === "toggle-properties") togglePanel("properties");
+    else if (action === "guide" || action === "shortcuts") activateAssetTab("guide");
+    else if (action === "fit") focusCircuit();
+    else if (action === "rotate") proxyClick("rotateBtn");
+    else if (action === "delete") window.dispatchEvent(new KeyboardEvent("keydown", { key: "Delete", bubbles: true }));
   }
 
   document.addEventListener("click", (event) => {
@@ -245,36 +183,23 @@
   propertiesToggleBtn?.addEventListener("click", () => togglePanel("properties"));
   fitCanvasBtn?.addEventListener("click", focusCircuit);
 
-  /* Canva-like asset search */
   function filterPalette() {
     if (!componentSearch || !palette) return;
     const query = componentSearch.value.trim().toLocaleLowerCase();
     palette.querySelectorAll(".palette-card").forEach((card) => {
-      const matches = !query || card.textContent.toLocaleLowerCase().includes(query);
-      card.hidden = !matches;
+      card.hidden = Boolean(query) && !card.textContent.toLocaleLowerCase().includes(query);
     });
   }
-
   componentSearch?.addEventListener("input", filterPalette);
-  if (palette) {
-    new MutationObserver(filterPalette).observe(palette, { childList: true, subtree: true });
-  }
+  if (palette) new MutationObserver(filterPalette).observe(palette, { childList: true, subtree: true });
 
-  /* Contextual options bar mirrors the currently active editor tool. */
-  const TOOL_ICONS = {
-    select: "↖",
-    wire: "⌁",
-    pencil: "✎",
-    pan: "✋",
-  };
-
+  const TOOL_ICONS = { select: "↖", wire: "⌁", pencil: "✎", pan: "✋" };
   function syncActiveTool() {
     const active = document.querySelector("[data-tool].active");
     if (!active) return;
     if (studioToolLabel) studioToolLabel.textContent = active.textContent.trim() || active.title || "Tool";
     if (studioToolIcon) studioToolIcon.textContent = TOOL_ICONS[active.dataset.tool] || "•";
   }
-
   document.querySelectorAll("[data-tool]").forEach((button) => {
     button.addEventListener("click", () => requestAnimationFrame(syncActiveTool));
     new MutationObserver(syncActiveTool).observe(button, { attributes: true, attributeFilter: ["class"] });
@@ -282,47 +207,30 @@
   syncActiveTool();
 
   function syncSelectionMirror() {
-    if (studioSelectionMirror && selectionSummary) {
-      studioSelectionMirror.textContent = selectionSummary.textContent.trim();
-    }
+    if (studioSelectionMirror && selectionSummary) studioSelectionMirror.textContent = selectionSummary.textContent.trim();
   }
   syncSelectionMirror();
-  if (selectionSummary) {
-    new MutationObserver(syncSelectionMirror).observe(selectionSummary, { childList: true, characterData: true, subtree: true });
-  }
+  if (selectionSummary) new MutationObserver(syncSelectionMirror).observe(selectionSummary, { childList: true, characterData: true, subtree: true });
 
-  /*
-   * Canvas visibility fix.
-   * app.js already owns the world coordinate system and exposes its classic
-   * top-level focusViewportOnPoint function. We reuse that native behavior and
-   * never scroll the document itself.
-   */
   function parseComponentPosition(component) {
-    if (!component) return null;
-    const transform = component.getAttribute("transform") || "";
+    const transform = component?.getAttribute("transform") || "";
     const match = transform.match(/translate\(\s*(-?\d+(?:\.\d+)?)\s*[ ,]\s*(-?\d+(?:\.\d+)?)/i);
-    if (!match) return null;
-    return { x: Number(match[1]), y: Number(match[2]) };
+    return match ? { x: Number(match[1]), y: Number(match[2]) } : null;
   }
 
   function nativeFocus(x, y) {
     if (!Number.isFinite(x) || !Number.isFinite(y) || !workspaceWrap) return false;
-
     if (typeof window.focusViewportOnPoint === "function") {
       window.focusViewportOnPoint(x, y);
       return true;
     }
-
     if (!workspaceSvg) return false;
     const viewBox = workspaceSvg.viewBox?.baseVal;
     const renderedWidth = parseFloat(workspaceSvg.style.width) || workspaceSvg.clientWidth;
     const renderedHeight = parseFloat(workspaceSvg.style.height) || workspaceSvg.clientHeight;
     if (!viewBox?.width || !viewBox?.height || !renderedWidth || !renderedHeight) return false;
-
-    const scaleX = renderedWidth / viewBox.width;
-    const scaleY = renderedHeight / viewBox.height;
-    workspaceWrap.scrollLeft = Math.max(0, x * scaleX - workspaceWrap.clientWidth / 2);
-    workspaceWrap.scrollTop = Math.max(0, y * scaleY - workspaceWrap.clientHeight / 2);
+    workspaceWrap.scrollLeft = Math.max(0, x * (renderedWidth / viewBox.width) - workspaceWrap.clientWidth / 2);
+    workspaceWrap.scrollTop = Math.max(0, y * (renderedHeight / viewBox.height) - workspaceWrap.clientHeight / 2);
     return true;
   }
 
@@ -333,34 +241,23 @@
   }
 
   function focusCircuit() {
-    const components = [...(componentLayer?.querySelectorAll(".component") || [])];
-    const points = components.map(parseComponentPosition).filter(Boolean);
+    const points = [...(componentLayer?.querySelectorAll(".component") || [])].map(parseComponentPosition).filter(Boolean);
     if (!points.length) {
-      const worldWidth = workspaceSvg?.viewBox?.baseVal?.width || 16000;
-      const worldHeight = workspaceSvg?.viewBox?.baseVal?.height || 12000;
-      nativeFocus(worldWidth / 2, worldHeight / 2);
+      nativeFocus((workspaceSvg?.viewBox?.baseVal?.width || 16000) / 2, (workspaceSvg?.viewBox?.baseVal?.height || 12000) / 2);
       return;
     }
-
-    const minX = Math.min(...points.map((point) => point.x));
-    const maxX = Math.max(...points.map((point) => point.x));
-    const minY = Math.min(...points.map((point) => point.y));
-    const maxY = Math.max(...points.map((point) => point.y));
-    nativeFocus((minX + maxX) / 2, (minY + maxY) / 2);
+    nativeFocus(
+      (Math.min(...points.map((point) => point.x)) + Math.max(...points.map((point) => point.x))) / 2,
+      (Math.min(...points.map((point) => point.y)) + Math.max(...points.map((point) => point.y))) / 2,
+    );
   }
 
   let pendingFocusMode = null;
   let focusTimer = 0;
-
   function scheduleCanvasFocus(mode) {
     pendingFocusMode = mode;
     window.clearTimeout(focusTimer);
-
-    const run = () => {
-      if (pendingFocusMode === "selected") focusSelectedComponent();
-      else focusCircuit();
-    };
-
+    const run = () => pendingFocusMode === "selected" ? focusSelectedComponent() : focusCircuit();
     requestAnimationFrame(() => requestAnimationFrame(run));
     focusTimer = window.setTimeout(run, 90);
     window.setTimeout(() => {
@@ -372,41 +269,25 @@
   document.addEventListener("click", (event) => {
     const sampleButton = event.target.closest?.(".sample-btn[data-sample]");
     if (sampleButton) {
-      document.querySelectorAll(".sample-btn[data-sample]").forEach((candidate) => {
-        candidate.classList.toggle("active", candidate === sampleButton);
-      });
+      document.querySelectorAll(".sample-btn[data-sample]").forEach((candidate) => candidate.classList.toggle("active", candidate === sampleButton));
       scheduleCanvasFocus("circuit");
       return;
     }
-
-    if (event.target.closest?.(".palette-card") || event.target.closest?.("#addComponentBtn")) {
-      scheduleCanvasFocus("selected");
-    }
+    if (event.target.closest?.(".palette-card") || event.target.closest?.("#addComponentBtn")) scheduleCanvasFocus("selected");
   });
 
-  if (componentLayer) {
-    new MutationObserver(() => {
-      if (pendingFocusMode) scheduleCanvasFocus(pendingFocusMode);
-    }).observe(componentLayer, { childList: true, subtree: true });
-  }
+  if (componentLayer) new MutationObserver(() => { if (pendingFocusMode) scheduleCanvasFocus(pendingFocusMode); }).observe(componentLayer, { childList: true, subtree: true });
 
   const inspector = document.getElementById("inspector");
-  if (inspector) {
-    new MutationObserver(() => {
-      if (!inspector.classList.contains("empty-state")) activatePropertyTab("inspector", false);
-    }).observe(inspector, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
-  }
+  if (inspector) new MutationObserver(() => {
+    if (!inspector.classList.contains("empty-state")) activatePropertyTab("inspector", false);
+  }).observe(inspector, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
 
   document.addEventListener("keydown", (event) => {
     const target = event.target;
     const typing = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target?.isContentEditable;
-
-    if (event.key === "Escape") {
-      closeMenus();
-      return;
-    }
+    if (event.key === "Escape") { closeMenus(); return; }
     if (typing) return;
-
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "b") {
       event.preventDefault();
       togglePanel("assets");
@@ -418,9 +299,10 @@
     }
   });
 
-  /* A creative desktop app should never page-scroll; only its panels/canvas scroll. */
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-  window.scrollTo(0, 0);
-
+  document.documentElement.scrollTop = 0;
+  document.documentElement.scrollLeft = 0;
+  document.body.scrollTop = 0;
+  document.body.scrollLeft = 0;
   shell.dataset.studioReady = "true";
 })();
