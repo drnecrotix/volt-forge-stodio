@@ -8,7 +8,6 @@ on:
       - "styles.css"
       - "styles-studio.css"
       - "app.js"
-      - "studio-shell.js"
       - "webapp/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
@@ -39,7 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p _site
-          cp index.html styles.css styles-studio.css app.js studio-shell.js _site/
+          cp index.html styles.css styles-studio.css app.js _site/
           cp -R webapp _site/webapp
           touch _site/.nojekyll
 
