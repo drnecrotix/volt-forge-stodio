@@ -1,16 +1,17 @@
 const DEBUG_URL = "http://127.0.0.1:9222";
+const APP_URL = "http://127.0.0.1:8000/";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function waitForTarget() {
-  for (let attempt = 0; attempt < 80; attempt += 1) {
+  for (let attempt = 0; attempt < 200; attempt += 1) {
     try {
       const response = await fetch(`${DEBUG_URL}/json`);
       const targets = await response.json();
-      const target = targets.find((entry) => entry.type === "page" && entry.url.includes("127.0.0.1:8000"));
+      const target = targets.find((entry) => entry.type === "page");
       if (target?.webSocketDebuggerUrl) return target;
     } catch {
-      // Chrome or the page may still be starting.
+      // Chrome may still be starting.
     }
     await sleep(100);
   }
@@ -25,13 +26,14 @@ class CdpClient {
   }
 
   async connect() {
-    if (this.socket.readyState === WebSocket.OPEN) return;
-    await new Promise((resolve, reject) => {
-      this.socket.addEventListener("open", resolve, { once: true });
-      this.socket.addEventListener("error", reject, { once: true });
-    });
+    if (this.socket.readyState !== WebSocket.OPEN) {
+      await new Promise((resolve, reject) => {
+        this.socket.addEventListener("open", resolve, { once: true });
+        this.socket.addEventListener("error", reject, { once: true });
+      });
+    }
     this.socket.addEventListener("message", (event) => {
-      const message = JSON.parse(event.data);
+      const message = JSON.parse(String(event.data));
       if (!message.id) return;
       const pending = this.pending.get(message.id);
       if (!pending) return;
@@ -57,7 +59,7 @@ class CdpClient {
       returnByValue: true,
     });
     if (result.exceptionDetails) {
-      throw new Error(result.exceptionDetails.text || "Runtime evaluation failed");
+      throw new Error(result.exceptionDetails.exception?.description || result.exceptionDetails.text || "Runtime evaluation failed");
     }
     return result.result?.value;
   }
@@ -121,8 +123,18 @@ const geometryExpression = (label) => `(() => {
   };
 })()`;
 
+async function waitForReady(client) {
+  for (let attempt = 0; attempt < 160; attempt += 1) {
+    const ready = await client.evaluate("document.readyState");
+    const shell = await client.evaluate("document.querySelector('#studioShell')?.dataset.studioReady || null");
+    if (ready === "complete" && shell === "true") return;
+    await sleep(50);
+  }
+  throw new Error("Timed out waiting for VoltForge Studio to initialize.");
+}
+
 async function waitForComponents(client, minimum) {
-  for (let attempt = 0; attempt < 80; attempt += 1) {
+  for (let attempt = 0; attempt < 120; attempt += 1) {
     const count = await client.evaluate("document.querySelectorAll('#componentLayer .component').length");
     if (count >= minimum) return count;
     await sleep(50);
@@ -137,14 +149,11 @@ await client.send("Runtime.enable");
 await client.send("Page.enable");
 
 try {
-  for (let attempt = 0; attempt < 80; attempt += 1) {
-    const ready = await client.evaluate("document.readyState");
-    if (ready === "complete") break;
-    await sleep(50);
-  }
-
+  await client.send("Page.navigate", { url: APP_URL });
+  await waitForReady(client);
   await waitForComponents(client, 4);
-  await sleep(350);
+  await sleep(400);
+
   const initial = await client.evaluate(geometryExpression("initial-working-led"));
   console.log("CANVAS_DIAGNOSTIC", JSON.stringify(initial, null, 2));
 
@@ -153,7 +162,7 @@ try {
     document.querySelector('.sample-btn[data-sample="openSwitch"]')?.click();
   })()`);
   await waitForComponents(client, 4);
-  await sleep(350);
+  await sleep(400);
   const sample = await client.evaluate(geometryExpression("after-example-click"));
   console.log("CANVAS_DIAGNOSTIC", JSON.stringify(sample, null, 2));
 
@@ -162,7 +171,7 @@ try {
     document.querySelector('.palette-card')?.click();
   })()`);
   await waitForComponents(client, 5);
-  await sleep(350);
+  await sleep(400);
   const added = await client.evaluate(geometryExpression("after-component-add"));
   console.log("CANVAS_DIAGNOSTIC", JSON.stringify(added, null, 2));
 
