@@ -3,132 +3,244 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#18191d" />
     <title>VoltForge Studio</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles-studio.css" />
   </head>
   <body>
-    <div class="app-shell">
-      <aside class="panel left-panel">
-        <div class="brand-block">
-          <div class="brand-mark">VF</div>
-          <div>
-            <p class="eyebrow" id="brandEyebrow">Circuit Intelligence Lab</p>
-            <div class="brand-title-row">
+    <div class="app-shell studio-shell" id="studioShell">
+      <header class="studio-topbar">
+        <div class="menu-row">
+          <div class="studio-brand">
+            <div class="brand-mark" aria-hidden="true">VF</div>
+            <div class="brand-copy">
               <h1>VoltForge Studio</h1>
-              <div class="language-switch" id="languageSwitch" aria-label="Language switch">
-                <button class="lang-btn active" id="langBgBtn" type="button" data-lang="bg">BG</button>
-                <button class="lang-btn" id="langEnBtn" type="button" data-lang="en">EN</button>
+              <p class="eyebrow" id="brandEyebrow">Circuit Intelligence Lab</p>
+            </div>
+          </div>
+
+          <nav class="app-menubar" aria-label="Главно меню">
+            <div class="menu-root">
+              <button class="menu-trigger" type="button" data-menu-trigger="file">Файл</button>
+              <div class="menu-popover" data-menu="file" hidden>
+                <button type="button" data-proxy-click="clearBtn"><span>Нова схема</span><kbd>Ctrl+N</kbd></button>
+                <span class="menu-separator"></span>
+                <button type="button" data-proxy-click="importBtn"><span>Import...</span></button>
+                <button type="button" data-proxy-click="exportBtn"><span>Export...</span></button>
               </div>
+            </div>
+
+            <div class="menu-root">
+              <button class="menu-trigger" type="button" data-menu-trigger="edit">Редакция</button>
+              <div class="menu-popover" data-menu="edit" hidden>
+                <button type="button" data-proxy-click="undoBtn"><span>Назад</span><kbd>Ctrl+Z</kbd></button>
+                <button type="button" data-proxy-click="redoBtn"><span>Напред</span><kbd>Ctrl+Y</kbd></button>
+                <span class="menu-separator"></span>
+                <button type="button" data-menu-action="rotate"><span>Завърти избраното</span><kbd>R</kbd></button>
+                <button type="button" data-menu-action="delete"><span>Изтрий избраното</span><kbd>Del</kbd></button>
+              </div>
+            </div>
+
+            <div class="menu-root">
+              <button class="menu-trigger" type="button" data-menu-trigger="view">Изглед</button>
+              <div class="menu-popover" data-menu="view" hidden>
+                <button type="button" data-menu-action="toggle-assets"><span>Assets панел</span><kbd>Tab</kbd></button>
+                <button type="button" data-menu-action="toggle-properties"><span>Properties панел</span></button>
+                <span class="menu-separator"></span>
+                <button type="button" data-menu-action="fit"><span>Покажи схемата</span><kbd>F</kbd></button>
+                <button type="button" data-proxy-click="zoomResetBtn"><span>100% мащаб</span><kbd>Ctrl+0</kbd></button>
+              </div>
+            </div>
+
+            <div class="menu-root">
+              <button class="menu-trigger" type="button" data-menu-trigger="analysis">Анализ</button>
+              <div class="menu-popover" data-menu="analysis" hidden>
+                <button type="button" data-proxy-click="simulateBtn"><span>Симулирай</span><kbd>▶</kbd></button>
+                <span class="menu-separator"></span>
+                <button type="button" data-proxy-click="spiceBtn"><span>SPICE workbench</span></button>
+                <button type="button" data-proxy-click="waveformsBtn"><span>Waveforms</span></button>
+                <button type="button" data-proxy-click="analysisBtn"><span>Transient analysis</span></button>
+                <button type="button" data-proxy-click="frequencyBtn"><span>Frequency</span></button>
+                <button type="button" data-proxy-click="scanBtn"><span>Scan image</span></button>
+              </div>
+            </div>
+
+            <div class="menu-root">
+              <button class="menu-trigger" type="button" data-menu-trigger="help">Помощ</button>
+              <div class="menu-popover" data-menu="help" hidden>
+                <button type="button" data-menu-action="guide"><span>Quick guide</span></button>
+                <button type="button" data-menu-action="shortcuts"><span>Клавишни комбинации</span></button>
+              </div>
+            </div>
+          </nav>
+
+          <div class="document-pill">
+            <span class="document-icon" aria-hidden="true">◇</span>
+            <span class="document-copy">
+              <strong id="workspaceHeading">Схема</strong>
+              <small id="selectionSummary">Няма избран елемент</small>
+            </span>
+          </div>
+
+          <div class="menu-actions">
+            <button class="primary-run" type="button" data-proxy-click="simulateBtn"><span aria-hidden="true">▶</span><span>Симулирай</span></button>
+            <div class="language-switch" id="languageSwitch" aria-label="Language switch">
+              <button class="lang-btn active" id="langBgBtn" type="button" data-lang="bg">BG</button>
+              <button class="lang-btn" id="langEnBtn" type="button" data-lang="en">EN</button>
             </div>
           </div>
         </div>
 
-        <div class="section">
-          <div class="section-title-row">
-            <h2 id="toolsHeading">Инструменти</h2>
-            <span class="chip" id="statusChip">готово</span>
+        <div class="options-row">
+          <div class="options-leading">
+            <button class="panel-toggle-button active" id="assetsToggleBtn" type="button" title="Assets panel" aria-label="Покажи или скрий Assets">▣</button>
+            <button class="panel-toggle-button active" id="propertiesToggleBtn" type="button" title="Properties panel" aria-label="Покажи или скрий Properties">▤</button>
+            <span class="options-divider"></span>
+            <button class="icon-command" id="undoBtn" type="button" title="Назад (Ctrl+Z)" aria-label="Назад">↶</button>
+            <button class="icon-command" id="redoBtn" type="button" title="Напред (Ctrl+Y)" aria-label="Напред">↷</button>
           </div>
-          <div class="toolbar-grid" id="toolButtons">
-            <button class="tool-btn active" id="toolSelectBtn" data-tool="select">Избор</button>
-            <button class="tool-btn" id="toolWireBtn" data-tool="wire">Проводник</button>
-            <button class="tool-btn" id="toolPencilBtn" data-tool="pencil">Молив</button>
-            <button class="tool-btn" id="toolPanBtn" data-tool="pan">Пан</button>
-            <button class="tool-btn" id="rotateBtn">Завърти</button>
-            <button class="tool-btn accent" id="simulateBtn">Симулирай</button>
-          </div>
-        </div>
 
-        <div class="section">
-          <div class="section-title-row">
-            <h2 id="guideHeading">Бърз guide</h2>
-            <span class="hint" id="guideHint">какво правят функциите</span>
+          <div class="tool-options">
+            <span class="active-tool-icon" id="studioToolIcon" aria-hidden="true">↖</span>
+            <span class="active-tool-copy">
+              <small>Инструмент</small>
+              <strong id="studioToolLabel">Избор</strong>
+            </span>
+            <span class="options-divider"></span>
+            <span class="selection-inline" id="studioSelectionMirror">Няма избран елемент</span>
           </div>
-          <div class="guide-card" id="quickGuide"></div>
-        </div>
 
-        <div class="section">
-          <div class="section-title-row">
-            <h2 id="componentsHeading">Компоненти</h2>
-            <span class="hint" id="componentsHint">dropdown + quick add</span>
-          </div>
-          <div class="component-picker-row">
-            <div class="picker-dropdown" id="componentDropdown">
-              <button class="picker-trigger" id="componentPickerBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
-                <span class="picker-selected">
-                  <span class="picker-selected-icon" id="componentPickerIcon"></span>
-                  <span class="picker-selected-label" id="componentPickerLabel"></span>
-                </span>
-                <span class="picker-chevron">⌄</span>
-              </button>
-              <div class="picker-menu" id="componentPickerMenu">
-                <div class="picker-categories" id="componentCategoryMenu"></div>
-                <div class="picker-options" id="componentOptionsMenu" role="listbox"></div>
-              </div>
+          <div class="options-trailing">
+            <button class="fit-button" id="fitCanvasBtn" type="button" title="Покажи цялата схема">Fit</button>
+            <div class="zoom-controls" aria-label="Мащаб">
+              <button class="zoom-btn" id="zoomOutBtn" type="button" title="Намали мащаба">−</button>
+              <button class="zoom-readout" id="zoomResetBtn" type="button" title="Нулирай мащаба">100%</button>
+              <button class="zoom-btn" id="zoomInBtn" type="button" title="Увеличи мащаба">+</button>
             </div>
-            <button class="ghost-btn" id="addComponentBtn">Добави</button>
+            <button class="auto-run-command" id="autoRunBtn" type="button" data-enabled="true">Авто: ВКЛ</button>
+            <span class="chip top-status" id="statusChip">готово</span>
           </div>
-          <div class="component-preview" id="componentPreview"></div>
-          <div class="palette" id="palette"></div>
         </div>
 
-        <div class="section section-inspector">
-          <div class="section-title-row">
-            <h2 id="samplesHeading">Примери</h2>
-            <span class="hint" id="samplesHint">готови схеми</span>
+        <div class="legacy-actions workspace-actions" aria-hidden="true">
+          <button id="importBtn" type="button">Import</button>
+          <button id="exportBtn" type="button">Export</button>
+          <button id="clearBtn" type="button">Изчисти</button>
+        </div>
+
+        <div class="compat-about" aria-hidden="true">
+          <p class="eyebrow" id="heroEyebrow">LTspice-подобен прототип с модерен интерфейс</p>
+          <h2 class="credit-title">Created by Nikola Stoyanov (<a href="https://instagram.com/dr.necrotix" target="_blank" rel="noreferrer noopener">Necrotix</a>)</h2>
+        </div>
+      </header>
+
+      <aside class="tool-rail" aria-label="Инструменти">
+        <div class="rail-group-label" id="toolsHeading">Инструменти</div>
+        <div class="toolbar-grid" id="toolButtons">
+          <button class="tool-btn active" id="toolSelectBtn" type="button" data-tool="select" title="Избор (V)">Избор</button>
+          <button class="tool-btn" id="toolWireBtn" type="button" data-tool="wire" title="Проводник (W)">Проводник</button>
+          <button class="tool-btn" id="toolPencilBtn" type="button" data-tool="pencil" title="Молив">Молив</button>
+          <button class="tool-btn" id="toolPanBtn" type="button" data-tool="pan" title="Ръка / Pan (H)">Пан</button>
+          <span class="rail-separator" aria-hidden="true"></span>
+          <button class="tool-btn" id="rotateBtn" type="button" title="Завърти (R)">Завърти</button>
+          <button class="tool-btn accent" id="simulateBtn" type="button" title="Симулирай">Симулирай</button>
+        </div>
+        <button class="rail-bottom-button" type="button" data-menu-action="guide" title="Помощ">?</button>
+      </aside>
+
+      <aside class="panel left-panel asset-panel" id="assetPanel" aria-label="Assets">
+        <div class="panel-head">
+          <div>
+            <strong>Assets</strong>
+            <span>Компоненти, примери и помощ</span>
           </div>
-          <div class="sample-list">
-            <button class="sample-btn" data-sample="workingLed">Работещ LED</button>
-            <button class="sample-btn" data-sample="openSwitch">Прекъснат ключ</button>
-            <button class="sample-btn" data-sample="shortCircuit">Късо съединение</button>
-            <button class="sample-btn" data-sample="diodeReverse">Обърнат диод</button>
-            <button class="sample-btn" data-sample="capacitorDcBlock">DC блок с кондензатор</button>
-          </div>
+          <button class="panel-close" type="button" data-menu-action="toggle-assets" aria-label="Скрий Assets">×</button>
+        </div>
+
+        <div class="asset-search-wrap">
+          <span aria-hidden="true">⌕</span>
+          <input id="componentSearch" type="search" autocomplete="off" placeholder="Търси компоненти..." aria-label="Търси компоненти" />
+        </div>
+
+        <div class="panel-tabs" role="tablist" aria-label="Assets">
+          <button class="panel-tab active" type="button" role="tab" aria-selected="true" data-studio-tab="components">Компоненти</button>
+          <button class="panel-tab" type="button" role="tab" aria-selected="false" data-studio-tab="samples">Примери</button>
+          <button class="panel-tab" type="button" role="tab" aria-selected="false" data-studio-tab="guide">Guide</button>
+        </div>
+
+        <div class="panel-content asset-content">
+          <section class="section asset-view active" data-studio-panel="components">
+            <div class="section-title-row visually-hidden-title">
+              <h2 id="componentsHeading">Компоненти</h2>
+              <span class="hint" id="componentsHint">dropdown + quick add</span>
+            </div>
+
+            <div class="asset-section-label">
+              <span>Библиотека</span>
+              <small>Избери и добави</small>
+            </div>
+
+            <div class="component-picker-row">
+              <div class="picker-dropdown" id="componentDropdown">
+                <button class="picker-trigger" id="componentPickerBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="picker-selected">
+                    <span class="picker-selected-icon" id="componentPickerIcon"></span>
+                    <span class="picker-selected-label" id="componentPickerLabel"></span>
+                  </span>
+                  <span class="picker-chevron" aria-hidden="true">⌄</span>
+                </button>
+                <div class="picker-menu" id="componentPickerMenu">
+                  <div class="picker-categories" id="componentCategoryMenu"></div>
+                  <div class="picker-options" id="componentOptionsMenu" role="listbox"></div>
+                </div>
+              </div>
+              <button class="add-component-command" id="addComponentBtn" type="button" title="Добави в центъра на изгледа">Добави</button>
+            </div>
+
+            <div class="component-preview" id="componentPreview"></div>
+            <div class="asset-section-label library-list-heading">
+              <span>Компоненти</span>
+              <small>Click to add</small>
+            </div>
+            <div class="palette" id="palette"></div>
+          </section>
+
+          <section class="section asset-view" data-studio-panel="samples" hidden>
+            <div class="section-title-row">
+              <h2 id="samplesHeading">Примери</h2>
+              <span class="hint" id="samplesHint">готови схеми</span>
+            </div>
+            <p class="panel-description">Шаблоните зареждат готова схема върху работното платно.</p>
+            <div class="sample-list">
+              <button class="sample-btn" type="button" data-sample="workingLed">Работещ LED</button>
+              <button class="sample-btn" type="button" data-sample="openSwitch">Прекъснат ключ</button>
+              <button class="sample-btn" type="button" data-sample="shortCircuit">Късо съединение</button>
+              <button class="sample-btn" type="button" data-sample="diodeReverse">Обърнат диод</button>
+              <button class="sample-btn" type="button" data-sample="capacitorDcBlock">DC блок с кондензатор</button>
+            </div>
+          </section>
+
+          <section class="section asset-view" data-studio-panel="guide" hidden>
+            <div class="section-title-row">
+              <h2 id="guideHeading">Бърз guide</h2>
+              <span class="hint" id="guideHint">какво правят функциите</span>
+            </div>
+            <div class="guide-card" id="quickGuide"></div>
+          </section>
         </div>
       </aside>
 
-      <main class="main-panel">
-        <header class="topbar">
-          <div>
-            <p class="eyebrow" id="heroEyebrow">LTspice-подобен прототип с модерен интерфейс</p>
-            <h2 class="credit-title">Created by Nikola Stoyanov (<a href="https://instagram.com/dr.necrotix" target="_blank" rel="noreferrer noopener">Necrotix</a>)</h2>
-          </div>
-          <div class="hero-stats">
-            <div class="hero-card">
-              <span id="sourceVoltageLabel">Източник</span>
-              <strong id="sourceVoltageStat">-- V</strong>
-            </div>
-            <div class="hero-card">
-              <span id="sourceCurrentLabel">Ток</span>
-              <strong id="sourceCurrentStat">-- A</strong>
-            </div>
-            <div class="hero-card">
-              <span id="circuitHealthLabel">Състояние</span>
-              <strong id="circuitHealthStat">Очаква схема</strong>
-            </div>
-          </div>
-        </header>
-
+      <main class="main-panel studio-canvas-panel">
         <section class="workspace-card">
-          <div class="workspace-toolbar">
-            <div class="workspace-meta">
-              <strong id="workspaceHeading">Схема</strong>
-              <span id="selectionSummary">Няма избран елемент</span>
+          <div class="canvas-document-tabs">
+            <div class="document-tab active">
+              <span class="document-tab-dot"></span>
+              <span>Схема 1</span>
+              <small>×</small>
             </div>
-            <div class="workspace-actions">
-              <div class="history-controls">
-                <button class="ghost-btn" id="undoBtn" type="button" title="Назад (Ctrl+Z)">Назад</button>
-                <button class="ghost-btn" id="redoBtn" type="button" title="Напред (Ctrl+Y)">Напред</button>
-              </div>
-              <div class="zoom-controls">
-                <button class="ghost-btn zoom-btn" id="zoomOutBtn">−</button>
-                <button class="ghost-btn zoom-readout" id="zoomResetBtn">100%</button>
-                <button class="ghost-btn zoom-btn" id="zoomInBtn">+</button>
-              </div>
-              <button class="ghost-btn" id="importBtn">Import</button>
-              <button class="ghost-btn" id="exportBtn">Export</button>
-              <button class="ghost-btn" id="clearBtn">Изчисти</button>
-              <button class="ghost-btn" id="autoRunBtn" data-enabled="true">Авто-симулация: ВКЛ</button>
-            </div>
+            <div class="canvas-spacer"></div>
+            <span class="canvas-coordinate-hint">Space + drag - pan · Ctrl + wheel - zoom</span>
           </div>
 
           <div class="workspace-wrap" id="workspaceWrap">
@@ -143,7 +255,6 @@
                     <stop offset="100%" stop-color="#7c3aed"></stop>
                   </linearGradient>
                 </defs>
-
                 <rect x="0" y="0" width="1280" height="760" fill="url(#gridPattern)"></rect>
                 <g id="wireLayer"></g>
                 <g id="componentLayer"></g>
@@ -152,44 +263,85 @@
               </svg>
             </div>
           </div>
+
+          <div class="canvas-floating-controls" aria-label="Canvas controls">
+            <button type="button" data-menu-action="fit" title="Покажи схемата">Fit</button>
+            <span class="floating-divider"></span>
+            <button type="button" data-menu-action="toggle-assets" title="Assets">A</button>
+            <button type="button" data-menu-action="toggle-properties" title="Properties">P</button>
+          </div>
         </section>
       </main>
 
-      <aside class="panel right-panel">
-        <div class="section section-inspector">
-          <div class="section-title-row">
-            <h2 id="inspectorHeading">Инспектор</h2>
-            <span class="hint" id="inspectorHint">редакция на избрания елемент</span>
+      <aside class="panel right-panel properties-panel" id="propertiesPanel" aria-label="Properties">
+        <div class="panel-head">
+          <div>
+            <strong>Properties</strong>
+            <span>Настройки и анализ</span>
           </div>
-          <div id="inspector" class="inspector empty-state">
-            Избери компонент, за да редактираш стойности, полярност и поведение.
-          </div>
+          <button class="panel-close" type="button" data-menu-action="toggle-properties" aria-label="Скрий Properties">×</button>
         </div>
 
-        <div class="section section-diagnostics">
-          <div class="section-title-row">
-            <h2 id="diagnosticsHeading">Диагностика</h2>
-            <span class="hint" id="diagnosticsHint">защо веригата не работи</span>
-          </div>
-          <div id="diagnostics" class="diagnostics empty-state">
-            Все още няма анализ. Добави източник, товар и GND, след това натисни "Симулирай".
-          </div>
+        <div class="panel-tabs property-tabs" role="tablist" aria-label="Properties">
+          <button class="panel-tab active" type="button" role="tab" aria-selected="true" data-property-tab="inspector">Инспектор</button>
+          <button class="panel-tab" type="button" role="tab" aria-selected="false" data-property-tab="diagnostics">Диагностика</button>
+          <button class="panel-tab" type="button" role="tab" aria-selected="false" data-property-tab="voltages">Напрежения</button>
         </div>
 
-        <div class="section section-voltages">
-          <div class="section-title-row">
-            <h2 id="voltagesHeading">Напрежения</h2>
-            <span class="hint" id="voltagesHint">възли и нива</span>
-          </div>
-          <div id="nodeReadout" class="node-readout empty-state">
-            След симулация тук ще се появят напреженията по възлите.
-          </div>
+        <div class="panel-content property-content">
+          <section class="section property-view active" data-property-panel="inspector">
+            <div class="section-title-row">
+              <h2 id="inspectorHeading">Инспектор</h2>
+              <span class="hint" id="inspectorHint">редакция на избрания елемент</span>
+            </div>
+            <div id="inspector" class="inspector empty-state">Избери компонент, за да редактираш стойности, полярност и поведение.</div>
+          </section>
+
+          <section class="section property-view" data-property-panel="diagnostics" hidden>
+            <div class="section-title-row">
+              <h2 id="diagnosticsHeading">Диагностика</h2>
+              <span class="hint" id="diagnosticsHint">защо веригата не работи</span>
+            </div>
+            <div id="diagnostics" class="diagnostics empty-state">Все още няма анализ. Добави източник, товар и GND, след това натисни "Симулирай".</div>
+          </section>
+
+          <section class="section property-view" data-property-panel="voltages" hidden>
+            <div class="section-title-row">
+              <h2 id="voltagesHeading">Напрежения</h2>
+              <span class="hint" id="voltagesHint">възли и нива</span>
+            </div>
+            <div id="nodeReadout" class="node-readout empty-state">След симулация тук ще се появят напреженията по възлите.</div>
+          </section>
         </div>
       </aside>
+
+      <footer class="studio-statusbar">
+        <div class="statusbar-left">
+          <span class="status-indicator" aria-hidden="true"></span>
+          <span>VoltForge Studio</span>
+        </div>
+        <div class="hero-stats" aria-label="Състояние на схемата">
+          <div class="hero-card">
+            <span id="sourceVoltageLabel">Източник</span>
+            <strong id="sourceVoltageStat">-- V</strong>
+          </div>
+          <div class="hero-card">
+            <span id="sourceCurrentLabel">Ток</span>
+            <strong id="sourceCurrentStat">-- A</strong>
+          </div>
+          <div class="hero-card health-card">
+            <span id="circuitHealthLabel">Състояние</span>
+            <strong id="circuitHealthStat">Очаква схема</strong>
+          </div>
+        </div>
+        <div class="statusbar-right">
+          <span>Creative workspace</span>
+        </div>
+      </footer>
     </div>
 
     <template id="paletteCardTemplate">
-      <button class="palette-card">
+      <button class="palette-card" type="button">
         <span class="palette-icon"></span>
         <span class="palette-copy">
           <strong></strong>
@@ -209,5 +361,6 @@
     <script src="webapp/gui/frequency-viewer.js"></script>
     <script src="webapp/gui/spice-workbench.js"></script>
     <script src="app.js"></script>
+    <script src="webapp/gui/studio-shell.js"></script>
   </body>
 </html>
