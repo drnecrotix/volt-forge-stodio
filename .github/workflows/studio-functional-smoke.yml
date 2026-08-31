@@ -1,4 +1,4 @@
-name: Studio Functional Smoke
+name: Studio Full Functional Audit
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
       - "styles-studio.css"
       - "app.js"
       - "webapp/**"
-      - "scripts/studio-functional-smoke.mjs"
+      - "scripts/studio-functional-audit-v2.mjs"
       - ".github/workflows/studio-functional-smoke.yml"
   workflow_dispatch:
 
@@ -20,7 +20,7 @@ permissions:
   contents: read
 
 jobs:
-  studio-functional-smoke:
+  studio-functional-audit:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -64,8 +64,8 @@ jobs:
             about:blank > /tmp/voltforge-chrome.log 2>&1 &
           sleep 2
 
-      - name: Run Studio functional audit
-        run: node scripts/studio-functional-smoke.mjs
+      - name: Run Studio full functional audit
+        run: node scripts/studio-functional-audit-v2.mjs
 
       - name: Print browser logs on failure
         if: failure()
